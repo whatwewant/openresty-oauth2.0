@@ -13,6 +13,11 @@ function _M.get(url, headers)
   --   err = err,
   -- }))
 
+  if err then
+    ngx.log(ngx.ERR, err)
+    return ngx.exit(ngx.HTTP_INTERNAL_SERVER_ERROR)
+  end
+
   return res:json(), err
 end
 
@@ -31,6 +36,11 @@ function _M.post(url, body)
   --   res = res:json(),
   --   err = err,
   -- }))
+
+  if err then
+    ngx.log(ngx.ERR, err)
+    return ngx.exit(ngx.HTTP_INTERNAL_SERVER_ERROR)
+  end
 
   return res:json(), err
 end
