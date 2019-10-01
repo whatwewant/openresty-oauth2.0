@@ -3,10 +3,7 @@ version: '3.3'
 services:
   auth:
     restart: always
-    build:
-      context: ..
-      dockerfile: Dockerfile
-    # image: whatwewant/openresty-basic-auth
+    image: whatwewant/openresty-oauth2.0
     ports:
       - 8080:80
       - 8090:8090
@@ -32,8 +29,6 @@ services:
       USER_AVATAR: avatar_url
       # 
       ALLOW_USERNAMES: whatwewant
-    volumes:
-      - ../src:/usr/local/openresty/lualib/oauth
 
   web:
     image: nginx:1.17.2-alpine
