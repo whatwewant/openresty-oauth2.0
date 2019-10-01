@@ -1,0 +1,93 @@
+# user nginx;
+worker_processes ##WORKER_PROCESSES##;
+
+error_log /dev/stdout info;
+pid /var/run/nginx.pid;
+
+events {
+  worker_connections 1024;
+}
+
+# @1 AUTHORIZE INFO
+env CLIENT_ID;
+env CLIENT_SECRET;
+env REDIRECT_URI;
+env SCOPE;
+
+# @2 URL INFO
+# @2.1 GET AUTHORIZE_URL
+#     args: ?client_id=CLIENT_ID&redirect_uri=REDIRECT_URI&scope=SCOPE&state=xxx
+env AUTHORIZE_URL;
+
+# @2.2 POST TOKEN_URL
+#     body: { client_id, client_secret, redirect_uri, code, state }
+env TOKEN_URL;
+
+# @2.3 GET USER_INFO_URL
+#     header: { Authorization: Bearer Token; }
+env USER_INFO_URL;
+
+# @3 USER FIELD
+env USER_USERNAME;
+env USER_NICKNAME;
+env USER_EMAIL;
+env USER_AVATAR;
+
+# @4 Permission
+env ALLOW_USERNAMES;
+
+http {
+  access_log /dev/stdout;
+
+  lua_code_cache on;
+
+  gzip on;
+  gzip_min_length 1k;
+  # gzip_buffer 4 16k;
+  gzip_comp_level 2;
+  gzip_types text/plain application/x-javascript text/css application/xml;
+
+  server {
+    listen ##PORT##;
+    server_name ##SERVER_NAME##;
+
+    resolver local=on ipv6=off;
+
+    charset utf-8;
+
+    client_max_body_size ##CLIENT_MAX_BODY_SIZE##;
+    proxy_read_timeout ##PROXY_READ_TIMEOUT##;
+
+    include /etc/nginx/conf.d/*.conf;
+
+    location / {
+      access_by_lua_file /usr/local/openresty/lualib/oauth/guard.lua;
+
+      proxy_pass ##PROXY_PASS##;
+
+      proxy_set_header X-Forwarded-Host $host;
+      proxy_set_header Upgrade		$http_upgrade;
+      proxy_set_header Connection	"upgrade";
+      proxy_set_header X-Real-IP $remote_addr;
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header Host $host;
+      proxy_hide_header X-Powered-By;
+      
+      # Do not pass Authorization header to destination
+      proxy_set_header Authorization "";
+    }
+
+    location /_oauth/ {
+      access_by_lua_file /usr/local/openresty/lualib/oauth/authorize.lua;
+    }
+  }
+
+  server {
+    listen 8090;
+
+    location /nginx_status {
+      stub_status on;
+      access_log off;
+    }
+  }
+}
