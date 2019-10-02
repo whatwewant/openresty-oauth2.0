@@ -3,10 +3,10 @@ version: '3.7'
 services:
   auth:
     restart: always
-    # build:
-    #   context: ../..
-    #   dockerfile: Dockerfile
-    image: whatwewant/openresty-oauth2.0
+    build:
+      context: ../..
+      dockerfile: Dockerfile
+    # image: whatwewant/openresty-oauth2.0
     ports:
       - 8080:80
       - 8090:8090
@@ -32,6 +32,8 @@ services:
       USER_AVATAR: avatar_url
       # 
       ALLOW_USERNAMES: whatwewant
+      # Cookie Secret
+      COOKIE_SECRET: whatwewant
 
   gerapy:
     restart: unless-stopped

@@ -31,6 +31,8 @@ services:
       USER_AVATAR: avatar_url
       # 
       ALLOW_USERNAMES: whatwewant
+      # Cookie Secret
+      COOKIE_SECRET: whatwewant
     volumes:
       - ../../src:/usr/local/openresty/lualib/oauth
 
