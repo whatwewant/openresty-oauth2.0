@@ -1,0 +1,43 @@
+version: '3.7'
+
+services:
+  auth:
+    restart: always
+    # build:
+    #   context: ../..
+    #   dockerfile: Dockerfile
+    image: whatwewant/openresty-oauth2.0
+    ports:
+      - 8080:80
+      - 8090:8090
+    environment:
+      # PORT: 80
+      # SERVER_NAME: localhost
+      CLIENT_MAX_BODY_SIZE: 10m 
+      # PROXY_READ_TIMEOUT: 60s
+      # WORKER_PROCESSES: auto
+      PROXY_PASS: http://gerapy:8000
+      CLIENT_ID: dc766a78a82e79b72000
+      CLIENT_SECRET: CHANGE_CLIENT_SECRET
+      REDIRECT_URI: http://127.0.0.1:8080/_oauth/github
+      SCOPE: ''
+      #
+      AUTHORIZE_URL: https://github.com/login/oauth/authorize
+      TOKEN_URL: https://github.com/login/oauth/access_token
+      USER_INFO_URL: https://api.github.com/user
+      #
+      USER_USERNAME: login
+      USER_NICKNAME: name
+      USER_EMAIL: email
+      USER_AVATAR: avatar_url
+      # 
+      ALLOW_USERNAMES: whatwewant
+
+  gerapy:
+    restart: unless-stopped
+    image: thsheep/gerapy:master
+    volumes:
+      - ./data/gerapy:/app/gerapy
+      - ./data/projects:/app/gerapy/projects
+    # ports:
+    #   - 8000:8000
