@@ -78,6 +78,7 @@ http {
       proxy_set_header Authorization "";
 
       add_header Cache-Control "public, max-age: 31536000";
+      expires 1y;
     }
 
     location / {
