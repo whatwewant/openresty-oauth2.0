@@ -38,17 +38,21 @@ env ALLOW_USERNAMES;
 
 http {
   access_log /dev/stdout;
+  
+  keepalive_timeout 65;
+  charset utf-8;
 
   lua_code_cache on;
 
   gzip on;
   gzip_vary on;
+  gzip_proxied any;
   gzip_min_length 1k;
   gzip_buffers 4 16k;
-  gzip_comp_level 3;
+  gzip_comp_level 4;
   gzip_http_version 1.1;
-  gzip_types text/plain application/json application/x-javascript application/javascript text/css text/javascript application/xml;
-  gzip_disable "MSIE [1-6]\.";
+  gzip_types text/plain application/json application/x-javascript application/javascript text/css text/javascript application/xml application/xml+rss image/svg+xml;
+  gzip_disable "msie6";
 
   server {
     listen ##PORT##;
@@ -56,12 +60,8 @@ http {
 
     resolver local=on ipv6=off;
 
-    charset utf-8;
-
     client_max_body_size ##CLIENT_MAX_BODY_SIZE##;
     proxy_read_timeout ##PROXY_READ_TIMEOUT##;
-
-    include /etc/nginx/conf.d/*.conf;
 
     location ~* \.(js|css|gif|png|jpg|jpeg)$ {
       proxy_pass ##PROXY_PASS##;
@@ -111,4 +111,6 @@ http {
       access_log off;
     }
   }
+
+  include /etc/nginx/conf.d/*.conf;
 }
