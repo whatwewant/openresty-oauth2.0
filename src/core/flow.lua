@@ -1,6 +1,9 @@
 local getenv = os.getenv
 local cjson = require('cjson')
 local Cookie = require('resty.cookie')
+local Aes = require('resty.aes')
+-- local String = require('resty.string')
+
 local Oauth = require('oauth/core/core')
 local config = require('oauth/core/config')
 local object = require('oauth/utils/object')
@@ -12,6 +15,7 @@ local COOKIES_USER = {
   username = 'uid',
   nickname = 'un',
   avatar = 'ua',
+  signature = 'sig', -- signature is for safe
 }
 
 local COOKIES_TOKEN = 'ut'
@@ -19,12 +23,18 @@ local COOKIES_TOKEN = 'ut'
 function _M.new(self)
   local cookie, err = Cookie:new()
   local oauth = Oauth:new(config)
+  local aes = Aes:new(config.cookie_secret)
+
   if not cookie then
     ngx.log(ngx.ERR, err)
     return
   end
 
-  return setmetatable({ cookie = cookie, oauth = oauth }, mt)
+  return setmetatable({
+    cookie = cookie,
+    oauth = oauth,
+    aes = aes,
+  }, mt)
 end
 
 function _M.get_token(self)
@@ -53,10 +63,43 @@ function _M.get_user(self)
     user[k] = value
   end
 
+  if not user.username then
+    ngx.log(ngx.INFO, 'Invalid User.username field')
+    return ngx.exit(ngx.INTERNAL_SERVER_ERROR)
+  end
+
+  self:validate_signature(user.signature)
+
   return user
 end
 
+function _M.validate_signature(self, signature)
+  if not signature then
+    -- @TODO should remember current path for redirect
+    ngx.log(ngx.INFO, 'Invalid Signature, Go Authorize')
+    return self.oauth:authorize()
+  end
+
+  local is_valid = self.aes:decrypt(ndk.set_var.set_decode_hex(signature))
+
+  -- ngx.say(signature..': '..tostring(is_valid))
+
+  if not is_valid then
+    -- return ngx.exit(ngx.HTTP_FORBIDDEN)
+    ngx.log(ngx.INFO, 'Invalid Signature'..signature..', Go Authorize')
+    ngx.sleep(1)
+    return self.oauth:authorize()
+  end
+end
+
+function _M.generate_signature(self, username)
+  return ndk.set_var.set_encode_hex(self.aes:encrypt(username))
+end
+
 function _M.set_token(self, user, token)
+  -- Generate Signature Info
+  user.signature = self:generate_signature(user.username)
+
   -- User Info
   for k, v in pairs(COOKIES_USER) do
     local ok, err = self.cookie:set(object.merge({

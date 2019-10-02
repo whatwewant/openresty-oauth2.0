@@ -1,7 +1,7 @@
 local getenv = os.getenv
 local object = require('oauth/utils/object')
 
-return {
+local config = {
   -- @1 AUTHORIZE INFO
   client_id = getenv('CLIENT_ID'),
   client_secret = getenv('CLIENT_SECRET'),
@@ -42,4 +42,12 @@ return {
     -- samesite = 'Strict',
     max_age = 3600 * 24 * 7,
   },
+
+  -- Time, Server Init Time
+  created_at = ngx.now(),
+
+  -- Cookie Secret
+  cookie_secret = getenv('COOKIE_SECRET') or tostring(ngx.now())
 }
+
+return config;

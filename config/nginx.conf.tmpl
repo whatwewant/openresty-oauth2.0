@@ -36,9 +36,12 @@ env USER_AVATAR;
 # @4 Permission
 env ALLOW_USERNAMES;
 
+# @5 Cookie Secret
+env COOKIE_SECRET;
+
 http {
   access_log /dev/stdout;
-  
+
   keepalive_timeout 65;
   charset utf-8;
 
