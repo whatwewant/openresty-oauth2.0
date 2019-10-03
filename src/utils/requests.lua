@@ -1,11 +1,15 @@
 local requests = require('resty.requests')
 local cjson = require('cjson')
+local object = require('oauth/utils/object')
 
 local USER_AGENT = 'ZoathOpenresty/0.0.9';
 
 local _M = {}
 
 function _M.get(url, headers)
+  local _headers = object.merge({
+    ['User-Agent'] = USER_AGENT,
+  }, headers)
   local res, err = requests.get(url, { headers = headers })
   
   -- ngx.say(cjson.encode({
