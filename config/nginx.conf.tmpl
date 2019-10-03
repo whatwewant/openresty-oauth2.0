@@ -8,6 +8,9 @@ events {
   worker_connections 1024;
 }
 
+# Mode: development or production
+env MODE;
+
 # @1 AUTHORIZE INFO
 env CLIENT_ID;
 env REDIRECT_URI;

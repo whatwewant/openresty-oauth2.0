@@ -1,7 +1,14 @@
 local getenv = os.getenv
 local object = require('oauth/utils/object')
 
+local PRODUCTION = 'production'
+
 local config = {
+  -- Mode: development or production
+  mode = getenv('MODE') or PRODUCTION,
+  -- Debug
+  debug = getenv('MODE') ~= PRODUCTION,
+
   -- @1 AUTHORIZE INFO
   client_id = getenv('CLIENT_ID'),
   redirect_uri = getenv('REDIRECT_URI'),
@@ -51,7 +58,18 @@ local config = {
   created_at = ngx.now(),
 
   -- Cookie Secret
-  cookie_secret = getenv('COOKIE_SECRET') or tostring(ngx.now())
+  cookie_secret = getenv('COOKIE_SECRET') or tostring(ngx.now()),
+
+  -- Cookie Field
+  cookie_fields = {
+    username = 'uid',
+    nickname = 'un',
+    avatar = 'ua',
+    signature = 'sig', -- signature is for safe
+  },
+
+  -- Cookie Token
+  cookie_token = 'ut',
 }
 
 return config;

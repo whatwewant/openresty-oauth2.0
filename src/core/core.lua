@@ -7,7 +7,12 @@ local Oauth = {}
 local mt = { __index = Oauth }
 
 function Oauth.new(self, options)
-  return setmetatable({ options = options }, mt)
+  local debug = options.deug
+  
+  return setmetatable({
+    options = options,
+    debug = debug,
+  }, mt)
 end
 
 -- @2 URL INFO
@@ -48,7 +53,23 @@ function Oauth.token(self, code, state)
 
   -- { scope, token_type, access_token }
   if res.access_token == nil then
-    ngx.say(cjson.encode(res))
+    -- @DEBUG
+    if self.debug then
+      ngx.say(cjson.encode({
+        debug = self.debug,
+        context = self.options,
+        response = res,
+      }))
+      return ngx.exit(500)
+    end
+
+    -- @ERROR LOG
+    ngx.log(ngx.ERR, cjson.encode({
+      debug = self.debug,
+      context = self.options,
+      response = res,
+    }))
+
     return ngx.exit(500)
   end
 
@@ -70,8 +91,47 @@ function Oauth.user(self, token)
     return ngx.exit(500)
   end
 
-  return object.pick_alias(user, self.options.user_fields)
+  -- return object.pick_alias(user, self.options.user_fields)
+  return self:map_user(user)
+end
 
+function Oauth.map_user(self, user)
+  -- User Info
+  local user_fields_map = self.options.user_fields
+  local mapped_user = {}
+
+  -- @example { username = 'login' }
+  -- @example key: username, v_map: login
+  for key, v_map in pairs(user_fields_map) do
+    if v_map then
+      local value = user[v_map]
+
+      -- has v_map, but value is nil, need debug
+      if not value then
+        -- @DEBUG
+        if self.debug then
+          ngx.say(cjson.encode({
+            debug = self.debug,
+            context = self.options,
+            response = user,
+          }))
+        end
+
+        -- @ERROR LOG
+        ngx.log(ngx.ERR, cjson.encode({
+          debug = self.debug,
+          context = self.options,
+          response = user,
+        }))
+
+        return ngx.exit(ngx.HTTP_INTERNAL_SERVER_ERROR)
+      end
+
+      mapped_user[key] = value
+    end
+  end
+
+  return mapped_user
 end
 
 return Oauth;

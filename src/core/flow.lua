@@ -11,14 +11,9 @@ local object = require('oauth/utils/object')
 local _M = {}
 local mt = { __index = _M }
 
-local COOKIES_USER = {
-  username = 'uid',
-  nickname = 'un',
-  avatar = 'ua',
-  signature = 'sig', -- signature is for safe
-}
+local COOKIES_USER = config.cookie_fields
 
-local COOKIES_TOKEN = 'ut'
+local COOKIES_TOKEN = config.cookie_token
 
 function _M.new(self)
   local cookie, err = Cookie:new()
