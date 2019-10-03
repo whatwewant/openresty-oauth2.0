@@ -3,6 +3,8 @@ local cjson = require('cjson')
 local requests = require('oauth/utils/requests')
 local object = require('oauth/utils/object')
 
+local get = object.get
+
 local Oauth = {}
 local mt = { __index = Oauth }
 
@@ -202,7 +204,7 @@ function Oauth.map_user(self, user)
   -- @example key: username, v_map: login
   for key, v_map in pairs(user_fields_map) do
     if v_map then
-      local value = user[v_map]
+      local value = get(user, v_map) -- user[v_map]
 
       -- has v_map, but value is nil, need debug
       if not value then
