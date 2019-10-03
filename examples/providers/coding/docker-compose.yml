@@ -10,7 +10,7 @@ services:
       - 8080:80
       - 8090:8090
     environment:
-      MODE: development
+      # MODE: development
       # PORT: 80
       # SERVER_NAME: localhost
       # CLIENT_MAX_BODY_SIZE: 1m 
@@ -37,7 +37,7 @@ services:
       # # USER_EMAIL: data.email
       # USER_AVATAR: data.avatar
       # 
-      # ALLOW_USERNAMES: kVDTnNPHDj
+      ALLOW_USERNAMES: kVDTnNPHD
       # Cookie Secret
       COOKIE_SECRET: whatwewant
     volumes:
