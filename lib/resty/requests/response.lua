@@ -5,6 +5,7 @@ local util = require "resty.requests.util"
 
 local is_tab = util.is_tab
 local new_tab = util.new_tab
+local includes = util.includes
 local find = string.find
 local lower = string.lower
 local insert = table.insert
@@ -312,13 +313,7 @@ local function json(r)
     end
 
     content_type = lower(content_type)
-    -- if content_type ~= "application/json"
-    --    and content_type ~= "application/json; charset=utf-8"
-    -- then
-    --     return nil, "not json"
-    -- end
-    local matched, err = ngx.re.match(content_type, "application/json", 'jo')
-    if not matched or err then
+    if not includes(content_type, "application/json") then
         return nil, "not json"
     end
 
