@@ -1,7 +1,14 @@
 local getenv = os.getenv
 local object = require('oauth/utils/object')
 
+local string_split = object.string_split
+local merge = object.merge
+
 local PRODUCTION = 'production'
+local root_url = getenv('ROOT_URL') or 'http://127.0.0.1:8080'
+local provider = getenv('PROVIDER')
+
+local redirect_uri = root_url..'/_oauth/'..provider
 
 local config = {
   -- Mode: development or production
@@ -9,9 +16,19 @@ local config = {
   -- Debug
   debug = getenv('MODE') ~= PRODUCTION,
 
+  -- Root url is for outside url, using to visit,
+  --   and callback root url, works with redirect_uri
+  root_url = root_url,
+
+  -- Provider Name
+  --   using for dynamic provider target
+  --   using for callback url, works with redirect_uri  
+  provider = provider,
+
   -- @1 AUTHORIZE INFO
   client_id = getenv('CLIENT_ID'),
-  redirect_uri = getenv('REDIRECT_URI'),
+  -- @example http://127.0.0.1:8080/_oauth/github
+  redirect_uri = redirect_uri, -- getenv('REDIRECT_URI'),
 
   -- @2 URL INFO
   -- @2.1 GET AUTHORIZE_URL
@@ -50,7 +67,7 @@ local config = {
   },
 
   -- @4 Permission: Single User
-  allow_usernames = object.string_split(getenv('ALLOW_USERNAMES') or '', '(%a+),?'),
+  allow_usernames = string_split(getenv('ALLOW_USERNAMES') or '', '(%a+),?'),
 
   -- @TODO
   state = '',
@@ -81,4 +98,6 @@ local config = {
   cookie_token = 'ut',
 }
 
-return config;
+local provider_config = require('oauth/providers/'..provider..'/config')
+
+return merge(config, provider_config);
