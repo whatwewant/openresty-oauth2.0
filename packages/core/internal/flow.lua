@@ -4,8 +4,8 @@ local Cookie = require('resty.cookie')
 local Aes = require('resty.aes')
 -- local String = require('resty.string')
 
-local Oauth = require('oauth/core/core/core')
-local config = require('oauth/core/core/config')
+local Oauth = require('oauth/core/internal/oauth')
+local config = require('oauth/core/config')
 local object = require('oauth/utils/object')
 
 local _M = {}
