@@ -86,7 +86,7 @@ function _M.validate_signature(self, signature)
 
   if not is_valid then
     -- return ngx.exit(ngx.HTTP_FORBIDDEN)
-    ngx.log(ngx.INFO, 'Invalid Signature'..signature..', Go Authorize')
+    ngx.log(ngx.INFO, 'Invalid Signature (', signature, '), Go Authorize')
     ngx.sleep(1)
     return self.oauth:authorize()
   end
@@ -143,7 +143,7 @@ end
 function _M.check_done_or_go_authorize(self)
   -- @1 Get Token
   local token = self:get_token()
-  ngx.log(ngx.INFO, '@Check.Prepare(1) Get Token: '..(token or 'null'))
+  ngx.log(ngx.INFO, '@Check.Prepare(1) Get Token: ', (token or 'null'))
   
   -- @2 Verify Token
   self:validate_token(token)
@@ -151,7 +151,7 @@ function _M.check_done_or_go_authorize(self)
 
   -- @3 Get User
   local user = self:get_user()
-  ngx.log(ngx.INFO, '@Check.Prepare(2) Get User: '..(user and user.username or 'null'))
+  ngx.log(ngx.INFO, '@Check.Prepare(2) Get User: ', (user and user.username or 'null'))
 
   -- @4 Check Permission
   self:validate_permission(user)
@@ -162,7 +162,7 @@ function _M.authorize(self)
   local args = ngx.req.get_uri_args()
   -- @1 Get Code
   local code = args.code
-  ngx.log(ngx.INFO, '@Authorize(1) Get Code: '..(code or 'null'))
+  ngx.log(ngx.INFO, '@Authorize(1) Get Code: ', (code or 'null'))
 
   if code == nil then
     -- @TODO
@@ -179,15 +179,15 @@ function _M.authorize(self)
 
   -- @1.1 Get App Name
   local app_name = matched[1]
-  ngx.log(ngx.INFO, '@Authorize(1.1) Get App Name: '..(app_name or 'null'))
+  ngx.log(ngx.INFO, '@Authorize(1.1) Get App Name: ', (app_name or 'null'))
 
   -- @2 Get Token
   local token = self.oauth:token(code)
-  ngx.log(ngx.INFO, '@Authorize(2) Get Token: '..(token or 'null'))
+  ngx.log(ngx.INFO, '@Authorize(2) Get Token: ', (token or 'null'))
 
   -- @3 Get User
   local user = self.oauth:user(token)
-  ngx.log(ngx.INFO, '@Authorize(3) Get User: '..(user and user.username or 'null'))
+  ngx.log(ngx.INFO, '@Authorize(3) Get User: ', (user and user.username or 'null'))
 
   -- @4 Set Token
   self:set_token(user, token)
@@ -201,7 +201,7 @@ function _M.authorize(self)
   -- @TODO default /
   local next = '/'
   ngx.redirect(next)
-  ngx.log(ngx.INFO, '@Authorize(6) Redirect To: '..next)
+  ngx.log(ngx.INFO, '@Authorize(6) Redirect To: ', next)
 end
 
 return _M
