@@ -312,9 +312,13 @@ local function json(r)
     end
 
     content_type = lower(content_type)
-    if content_type ~= "application/json"
-       and content_type ~= "application/json; charset=utf-8"
-    then
+    -- if content_type ~= "application/json"
+    --    and content_type ~= "application/json; charset=utf-8"
+    -- then
+    --     return nil, "not json"
+    -- end
+    local matched, err = ngx.re.match(content_type, "application/json", 'jo')
+    if not matched or err then
         return nil, "not json"
     end
 
