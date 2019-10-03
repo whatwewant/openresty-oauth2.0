@@ -138,7 +138,7 @@ function _M.validate_permission(self, user)
 
     -- @TODO if uri ~= '/', redirect '/'
     if not config.debug and ngx.var.uri ~= '/' then
-      ngx.redirect('/')
+      return ngx.redirect('/')
     end
 
     return ngx.exit(ngx.HTTP_FORBIDDEN)
@@ -160,7 +160,7 @@ function _M.check_done_or_go_authorize(self)
 
   -- @4 Check Permission
   self:validate_permission(user)
-  ngx.log(ngx.INFO, '@Check.Validate(1) Permission OK')
+  ngx.log(ngx.INFO, '@Check.Validate(2) Permission OK')
 end
 
 function _M.authorize(self)
