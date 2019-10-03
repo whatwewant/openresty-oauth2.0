@@ -135,6 +135,12 @@ function _M.validate_permission(self, user)
   local ok = object.includes(config.allow_usernames, user.username)
   if ok ~= true then
     ngx.log(ngx.INFO, '@Check.Validate(2) Permission: 403 Forbidden')
+
+    -- @TODO if uri ~= '/', redirect '/'
+    if not config.debug and ngx.var.uri ~= '/' then
+      ngx.redirect('/')
+    end
+
     return ngx.exit(ngx.HTTP_FORBIDDEN)
   end
 end
