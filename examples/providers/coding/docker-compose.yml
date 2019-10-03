@@ -17,29 +17,31 @@ services:
       # PROXY_READ_TIMEOUT: 60s
       # WORKER_PROCESSES: auto
       PROXY_PASS: http://web:8080
+      ROOT_URL: http://127.0.0.1:8080
+      PROVIDER: coding
       CLIENT_ID: e883e9d2fb8b058e55cdb65cf17d70fc
       CLIENT_SECRET: CHANGE_CLIENT_SECRET
-      REDIRECT_URI: http://127.0.0.1:8080/_oauth/coding
-      SCOPE: 'user'
-      #
-      AUTHORIZE_URL: https://whatwewant.coding.net/oauth_authorize.html
-      TOKEN_URL: https://whatwewant.coding.net/api/oauth/access_token
-      USER_INFO_URL: https://whatwewant.coding.net/api/account/current_user
-      #
-      TOKEN_DATA_IN_QUERY: 1
-      #
-      USER_INFO_QUERY: access_token
-      #
-      USER_USERNAME: data.global_key
-      USER_NICKNAME: data.name
-      # USER_EMAIL: data.email
-      USER_AVATAR: data.avatar
+      # REDIRECT_URI: http://127.0.0.1:8080/_oauth/coding
+      # SCOPE: 'user'
+      # #
+      # AUTHORIZE_URL: https://whatwewant.coding.net/oauth_authorize.html
+      # TOKEN_URL: https://whatwewant.coding.net/api/oauth/access_token
+      # USER_INFO_URL: https://whatwewant.coding.net/api/account/current_user
+      # #
+      # TOKEN_DATA_IN_QUERY: 1
+      # #
+      # USER_INFO_QUERY: access_token
+      # #
+      # USER_USERNAME: data.global_key
+      # USER_NICKNAME: data.name
+      # # USER_EMAIL: data.email
+      # USER_AVATAR: data.avatar
       # 
-      ALLOW_USERNAMES: DutPdKODim
+      ALLOW_USERNAMES: kVDTnNPHDj
       # Cookie Secret
       COOKIE_SECRET: whatwewant
     volumes:
-      - ../../../src:/usr/local/openresty/lualib/oauth
+      - ../../../packages:/usr/local/openresty/lualib/oauth
 
   web:
     image: nginx:1.17.2-alpine
