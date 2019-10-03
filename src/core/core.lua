@@ -57,6 +57,7 @@ function Oauth.token(self, code, state)
     if self.debug then
       ngx.say(cjson.encode({
         debug = self.debug,
+        message = '[token] access_token is nil, please see response',
         context = self.options,
         response = res,
       }))
@@ -66,6 +67,7 @@ function Oauth.token(self, code, state)
     -- @ERROR LOG
     ngx.log(ngx.ERR, cjson.encode({
       debug = self.debug,
+      message = '[token] access_token is nil, please see response',
       context = self.options,
       response = res,
     }))
@@ -77,23 +79,82 @@ function Oauth.token(self, code, state)
 end
 
 function Oauth.user(self, token)
-  local url = self.options.user_info_url
-  local headers = {
+  local base_url = self.options.user_info_url
+  local header = self:get_user_header(token)
+  local query = self:get_user_query(token)
+  -- local body = self:get_user_body(token)
+
+  local url = base_url..query
+
+  local headers = object.merge({
     -- ['Content-Type'] = 'application/json',
     Accept = 'application/json',
-    Authorization = 'Bearer '..token,
-  }
+    -- Authorization = 'Bearer '..token,
+  }, header)
   
   local user, err = requests.get(url, headers)
 
   if err then
-    ngx.say(err)
+    ngx.say(cjson.encode({
+      context = {
+        url = base_url,
+        header = header,
+        headers = headers,
+        query = query,
+      },
+      err = err,
+    }))
+
     return ngx.exit(ngx.HTTP_INTERNAL_SERVER_ERROR)
   end
+
+  -- @TODO
+  -- if true then
+  --   ngx.say(cjson.encode({
+  --     context = {
+  --       url = base_url,
+  --       header = header,
+  --       headers = headers,
+  --       query = query,
+  --     },
+  --     err = err,
+  --   }))
+  --   return ngx.exit(500)
+  -- end
 
   -- return object.pick_alias(user, self.options.user_fields)
   return self:map_user(user)
 end
+
+function Oauth.get_user_header(self, token)
+  if self.options.user_info_header then
+    return {
+      [self.options.user_info_header] = 'Bearer '..token, -- @TODO TOKEN
+    }
+  end
+
+  return nil
+end
+
+function Oauth.get_user_query(self, token)
+  if self.options.user_info_query then
+    return '?'..ngx.encode_args({
+      [self.options.user_info_query] = token,
+    })
+  end
+
+  return ''
+end
+
+-- function Oauth.get_user_body(self, token)
+--   if self.options.user_info_body then
+--     return {
+--       [self.options.user_info_body] = token,
+--     }
+--   end
+
+--   return ''
+-- end
 
 function Oauth.map_user(self, user)
   -- User Info
@@ -112,6 +173,7 @@ function Oauth.map_user(self, user)
         if self.debug then
           ngx.say(cjson.encode({
             debug = self.debug,
+            message = '[map_user] user fields('..key..') failed, please look at the response',
             context = self.options,
             response = user,
           }))
@@ -121,6 +183,7 @@ function Oauth.map_user(self, user)
         -- @ERROR LOG
         ngx.log(ngx.ERR, cjson.encode({
           debug = self.debug,
+          message = '[map_user] user fields ('..key..') failed, please look at the response',
           context = self.options,
           response = user,
         }))

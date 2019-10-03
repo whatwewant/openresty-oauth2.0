@@ -44,15 +44,19 @@ function _M.pick_alias(table, alias)
   return _object
 end
 
-function _M.merge(t1, t2)
-  local _t = {}
+function _M.merge(t1, t2, t3)
+  local _t = t1 or {}
 
-  for k, v in pairs(t1) do
-    _t[k] = v
+  if t2 then
+    for k, v in pairs(t2) do
+      _t[k] = v
+    end
   end
 
-  for k, v in pairs(t2) do
-    _t[k] = v
+  if t3 then
+    for k, v in pairs(t3) do
+      _t[k] = v
+    end
   end
 
   return _t

@@ -32,12 +32,17 @@ local config = {
   --  header: { Authorization: Bearer Token; }
   user_info_url = getenv('USER_INFO_URL'),
 
+  -- @2.3.1 Extendable Token in Header, Query, Body
+  user_info_header = getenv('USER_INFO_HEADER'),
+  user_info_query = getenv('USER_INFO_QUERY'),
+  user_info_body = getenv('USER_INFO_BODY'),
+
   -- @3 USER FIELD
   user_fields = {
     username = getenv('USER_USERNAME') or 'login',
-    nickname = getenv('USER_NICKNAME') or 'name',
-    email = getenv('USER_EMAIL') or 'email',
-    avatar = getenv('USER_AVATAR') or 'avatar',
+    nickname = getenv('USER_NICKNAME'),
+    email = getenv('USER_EMAIL'),
+    avatar = getenv('USER_AVATAR'),
   },
 
   -- @4 Permission: Single User
