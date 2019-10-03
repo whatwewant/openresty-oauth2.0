@@ -36,7 +36,7 @@ end
 --  body: { client_id, client_secret, redirect_uri, code, state }
 function Oauth.token(self, code, state)
   local url = self.options.token_url;
-  local body = {
+  local data = {
     client_id = self.options.client_id,
     client_secret = self.options.client_secret,
     redirect_uri = self.options.redirect_uri,
@@ -45,7 +45,44 @@ function Oauth.token(self, code, state)
     state = state -- @TODO
   }
 
-  local res, err = requests.post(url, body)
+  local res, err = nil, nil
+  -- in body
+  if self.options.token_data_in_body then
+    res, err = requests.post(url, data)
+  -- in query
+  elseif self.options.token_data_in_query then
+    res, err = requests.post(url..'?'..ngx.encode_args(data))
+  else
+    if self.debug then
+      ngx.say(cjson.encode({
+        debug = self.debug,
+        message = '[token] please set token_data_in_body or token_data_in_query',
+        context = self.options,
+        response = res,
+      }))
+      return ngx.exit(ngx.HTTP_INTERNAL_SERVER_ERROR)
+    end
+
+    ngx.log(ngx.ERR, cjson.encode({
+      debug = self.debug,
+      message = '[token] please set token_data_in_body or token_data_in_query',
+      context = self.options,
+      response = res,
+    }))
+    return ngx.exit(ngx.HTTP_INTERNAL_SERVER_ERROR)
+  end
+
+  -- if true then
+  --   ngx.say(cjson.encode({
+  --     message = 'core.token',
+  --     url = url,
+  --     body = body,
+  --     res = res,
+  --     err = err,
+  --   }))
+  --   return ngx.exit(ngx.HTTP_INTERNAL_SERVER_ERROR)
+  -- end
+
   if err then
     ngx.say(err)
     return ngx.exit(ngx.HTTP_INTERNAL_SERVER_ERROR)

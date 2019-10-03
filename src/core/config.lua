@@ -28,6 +28,10 @@ local config = {
   -- using to get access token, default: authorization_code
   grant_type = getenv('GRANT_TYPE') or 'authorization_code',
 
+  -- @2.2.1 Extendable Data in Body, Query
+  token_data_in_body = getenv('TOKEN_DATA_IN_BODY') or false,
+  token_data_in_query = getenv('TOKEN_DATA_IN_QUERY') or false,
+
   -- @2.3 GET USER_INFO_URL
   --  header: { Authorization: Bearer Token; }
   user_info_url = getenv('USER_INFO_URL'),
