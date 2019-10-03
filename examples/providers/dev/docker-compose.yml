@@ -10,6 +10,7 @@ services:
       - 8080:80
       - 8090:8090
     environment:
+      MODE: development
       # PORT: 80
       # SERVER_NAME: localhost
       # CLIENT_MAX_BODY_SIZE: 1m 
@@ -34,7 +35,7 @@ services:
       # Cookie Secret
       COOKIE_SECRET: whatwewant
     volumes:
-      - ../../src:/usr/local/openresty/lualib/oauth
+      - ../../../src:/usr/local/openresty/lualib/oauth
 
   web:
     image: nginx:1.17.2-alpine
