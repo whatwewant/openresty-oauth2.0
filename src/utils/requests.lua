@@ -1,6 +1,8 @@
 local requests = require('resty.requests')
 local cjson = require('cjson')
 
+local USER_AGENT = 'ZoathOpenresty/0.0.9';
+
 local _M = {}
 
 function _M.get(url, headers)
@@ -24,6 +26,7 @@ end
 function _M.post(url, body)
   local headers = {
     ['Content-Type'] = 'application/json',
+    ['User-Agent'] = USER_AGENT,
     Accept = 'application/json',
   }
 
@@ -41,6 +44,22 @@ function _M.post(url, body)
     ngx.log(ngx.ERR, err)
     return ngx.exit(ngx.HTTP_INTERNAL_SERVER_ERROR)
   end
+
+  -- if true then
+  --   ngx.say(cjson.encode({
+  --     err = err,
+  --     res = {
+  --       url = res.url,
+  --       method = res.method,
+  --       status = res.status_code,
+  --       headers = res.headers,
+  --       body = res:body(),
+  --       json = res:json(),
+  --       elapsed = res.elapsed,
+  --     },
+  --   }))
+  --   return ngx.exit(ngx.HTTP_INTERNAL_SERVER_ERROR)
+  -- end
 
   return res:json(), err
 end
