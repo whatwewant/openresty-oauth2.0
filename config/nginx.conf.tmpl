@@ -75,6 +75,8 @@ http {
   gzip_types text/plain application/json application/x-javascript application/javascript text/css text/javascript application/xml application/xml+rss image/svg+xml;
   gzip_disable "msie6";
 
+  server_tokens off;
+
   server {
     listen ##PORT##;
     server_name ##SERVER_NAME##;
