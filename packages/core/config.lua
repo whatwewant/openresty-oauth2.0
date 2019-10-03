@@ -4,6 +4,8 @@ local object = require('oauth/utils/object')
 local string_split = object.string_split
 local merge = object.merge
 
+local version = '1.0.0'
+
 local PRODUCTION = 'production'
 local ALLOW_ALL = 'all'
 
@@ -15,6 +17,8 @@ local allow_usernames_str = getenv('ALLOW_USERNAMES') or 'all'
 local redirect_uri = root_url..'/_oauth/'..provider
 
 local config = {
+  version = version,
+  
   -- Mode: development or production
   mode = mode,
   -- Debug
