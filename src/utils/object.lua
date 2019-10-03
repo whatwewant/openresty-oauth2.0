@@ -66,12 +66,46 @@ function _M.includes(table, key)
   return table[key] ~= nil and table[key] ~= false
 end
 
-function _M.string_split(str, pattern)
+function string_split(str, pattern)
   local _t = {}
   for k, _ in string.gmatch(str, pattern) do
     _t[k] = true
   end
   return _t
 end
+
+function split(str, seperator)
+  local _t = {}
+  local pattern = '([^'..seperator..']+)'
+  for k, _ in string.gmatch(str, pattern) do
+    table.insert(_t, k)
+  end
+  return _t
+end
+
+function get(object, path_str)
+  local paths = split(path_str, '.')
+  local parent = object
+  local len = #paths
+
+  for i, k in ipairs(paths) do
+    local v = parent[k]
+    if not v then
+      return nil
+    elseif i == len then
+      return v
+    elseif type(v) ~= 'table' then
+      return nil
+    end
+    
+    parent = v
+  end
+
+  return nil
+end
+
+_M.split = split
+_M.string_split = string_split
+_M.get = get
 
 return _M
