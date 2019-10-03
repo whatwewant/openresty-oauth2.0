@@ -14,7 +14,15 @@ end
 -- @2.1 GET AUTHORIZE_URL
 --   args: ?client_id=CLIENT_ID&redirect_uri=REDIRECT_URI&scope=SCOPE&state=xxx
 function Oauth.authorize(self)
-  local url = self.options.authorize_url..'?'..'client_id='..self.options.client_id..'&'..'redirect_uri'..self.options.redirect_uri..'&'..'scope='..self.options.scope..'&'..'state='..self.options.state;
+  local query = {
+    client_id = self.options.client_id,
+    redirect_uri = self.options.redirect_uri,
+    response_type = self.options.response_type,
+    scope = self.options.scope,
+    state = self.options.state, -- @TODO
+  }
+
+  local url = self.options.authorize_url..'?'..ngx.encode_args(query)
 
   return ngx.redirect(url)
 end
@@ -27,8 +35,9 @@ function Oauth.token(self, code, state)
     client_id = self.options.client_id,
     client_secret = self.options.client_secret,
     redirect_uri = self.options.redirect_uri,
+    grant_type = self.options.grant_type,
     code = code,
-    state = state
+    state = state -- @TODO
   }
 
   local res, err = requests.post(url, body)

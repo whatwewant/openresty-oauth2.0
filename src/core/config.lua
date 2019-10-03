@@ -4,18 +4,22 @@ local object = require('oauth/utils/object')
 local config = {
   -- @1 AUTHORIZE INFO
   client_id = getenv('CLIENT_ID'),
-  client_secret = getenv('CLIENT_SECRET'),
   redirect_uri = getenv('REDIRECT_URI'),
-  scope = getenv('SCOPE'),
 
   -- @2 URL INFO
   -- @2.1 GET AUTHORIZE_URL
   --   args: ?client_id=CLIENT_ID&redirect_uri=REDIRECT_URI&scope=SCOPE&state=xxx
   authorize_url = getenv('AUTHORIZE_URL'),
+  -- using to authorize, default: code
+  response_type = getenv('RESPONSE_TYPE') or 'code',
+  scope = getenv('SCOPE'),
 
   -- @2.2 POST TOKEN_URL
   --  body: { client_id, client_secret, redirect_uri, code, state }
   token_url = getenv('TOKEN_URL'),
+  client_secret = getenv('CLIENT_SECRET'),
+  -- using to get access token, default: authorization_code
+  grant_type = getenv('GRANT_TYPE') or 'authorization_code',
 
   -- @2.3 GET USER_INFO_URL
   --  header: { Authorization: Bearer Token; }

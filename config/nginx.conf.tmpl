@@ -10,18 +10,20 @@ events {
 
 # @1 AUTHORIZE INFO
 env CLIENT_ID;
-env CLIENT_SECRET;
 env REDIRECT_URI;
-env SCOPE;
 
 # @2 URL INFO
 # @2.1 GET AUTHORIZE_URL
-#     args: ?client_id=CLIENT_ID&redirect_uri=REDIRECT_URI&scope=SCOPE&state=xxx
+#     args: ?client_id=CLIENT_ID&redirect_uri=REDIRECT_URI&response_type=RESPONSE_TYPE&scope=SCOPE&state=xxx
 env AUTHORIZE_URL;
+env RESPONSE_TYPE; # using to authorize, default: code
+env SCOPE;
 
 # @2.2 POST TOKEN_URL
-#     body: { client_id, client_secret, redirect_uri, code, state }
+#     body: { client_id, client_secret, redirect_uri, grant_type, code, state }
 env TOKEN_URL;
+env CLIENT_SECRET;
+env GRANT_TYPE; # using to get access token, default: authorization_code
 
 # @2.3 GET USER_INFO_URL
 #     header: { Authorization: Bearer Token; }
