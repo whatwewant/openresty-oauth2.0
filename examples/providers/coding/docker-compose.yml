@@ -37,7 +37,7 @@ services:
       # # USER_EMAIL: data.email
       # USER_AVATAR: data.avatar
       # 
-      ALLOW_USERNAMES: kVDTnNPHDj
+      # ALLOW_USERNAMES: kVDTnNPHDj
       # Cookie Secret
       COOKIE_SECRET: whatwewant
     volumes:
