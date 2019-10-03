@@ -11,6 +11,9 @@ events {
 # Mode: development or production
 env MODE;
 
+# Provider
+env PROVIDER;
+
 # @1 AUTHORIZE INFO
 env CLIENT_ID;
 env REDIRECT_URI;
@@ -72,6 +75,8 @@ http {
   gzip_types text/plain application/json application/x-javascript application/javascript text/css text/javascript application/xml application/xml+rss image/svg+xml;
   gzip_disable "msie6";
 
+  server_tokens off;
+
   server {
     listen ##PORT##;
     server_name ##SERVER_NAME##;
@@ -100,7 +105,7 @@ http {
     }
 
     location / {
-      access_by_lua_file /usr/local/openresty/lualib/oauth/guard.lua;
+      access_by_lua_file /usr/local/openresty/lualib/oauth/core/guard.lua;
 
       proxy_pass ##PROXY_PASS##;
 
@@ -117,7 +122,7 @@ http {
     }
 
     location /_oauth/ {
-      access_by_lua_file /usr/local/openresty/lualib/oauth/authorize.lua;
+      access_by_lua_file /usr/local/openresty/lualib/oauth/core/authorize.lua;
     }
   }
 

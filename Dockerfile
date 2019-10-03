@@ -15,8 +15,8 @@ COPY ./config/watch.sh /usr/local/bin
 
 COPY ./config/endpoint.sh /
 COPY ./config/nginx.conf.tmpl /
-COPY ./lib /usr/local/openresty/lualib
-COPY ./src /usr/local/openresty/lualib/oauth
+COPY ./packages/lib /usr/local/openresty/lualib
+COPY ./packages /usr/local/openresty/lualib/oauth
 # COPY ./src /lua
 
 CMD sh /endpoint.sh

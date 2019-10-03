@@ -1,17 +1,38 @@
 local getenv = os.getenv
 local object = require('oauth/utils/object')
 
+local string_split = object.string_split
+local merge = object.merge
+
 local PRODUCTION = 'production'
+local ALLOW_ALL = 'all'
+
+local mode = getenv('MODE') or PRODUCTION
+local root_url = getenv('ROOT_URL') or 'http://127.0.0.1:8080'
+local provider = getenv('PROVIDER')
+local allow_usernames_str = getenv('ALLOW_USERNAMES') or 'all'
+
+local redirect_uri = root_url..'/_oauth/'..provider
 
 local config = {
   -- Mode: development or production
-  mode = getenv('MODE') or PRODUCTION,
+  mode = mode,
   -- Debug
-  debug = getenv('MODE') ~= PRODUCTION,
+  debug = mode ~= PRODUCTION,
+
+  -- Root url is for outside url, using to visit,
+  --   and callback root url, works with redirect_uri
+  root_url = root_url,
+
+  -- Provider Name
+  --   using for dynamic provider target
+  --   using for callback url, works with redirect_uri  
+  provider = provider,
 
   -- @1 AUTHORIZE INFO
   client_id = getenv('CLIENT_ID'),
-  redirect_uri = getenv('REDIRECT_URI'),
+  -- @example http://127.0.0.1:8080/_oauth/github
+  redirect_uri = redirect_uri, -- getenv('REDIRECT_URI'),
 
   -- @2 URL INFO
   -- @2.1 GET AUTHORIZE_URL
@@ -49,8 +70,11 @@ local config = {
     avatar = getenv('USER_AVATAR'),
   },
 
-  -- @4 Permission: Single User
-  allow_usernames = object.string_split(getenv('ALLOW_USERNAMES') or '', '(%a+),?'),
+  -- @4 Permission
+  --   Allow all
+  allow_all = allow_usernames_str == ALLOW_ALL,
+  --   Multiple User
+  allow_usernames = string_split(allow_usernames_str, '(%a+),?'),
 
   -- @TODO
   state = '',
@@ -81,4 +105,6 @@ local config = {
   cookie_token = 'ut',
 }
 
-return config;
+local provider_config = require('oauth/providers/'..provider..'/config')
+
+return merge(config, provider_config);
