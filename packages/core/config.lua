@@ -7,6 +7,7 @@ local merge = object.merge
 local PRODUCTION = 'production'
 local ALLOW_ALL = 'all'
 
+local mode = getenv('MODE') or PRODUCTION
 local root_url = getenv('ROOT_URL') or 'http://127.0.0.1:8080'
 local provider = getenv('PROVIDER')
 local allow_usernames_str = getenv('ALLOW_USERNAMES') or 'all'
@@ -15,9 +16,9 @@ local redirect_uri = root_url..'/_oauth/'..provider
 
 local config = {
   -- Mode: development or production
-  mode = getenv('MODE') or PRODUCTION,
+  mode = mode,
   -- Debug
-  debug = getenv('MODE') ~= PRODUCTION,
+  debug = mode ~= PRODUCTION,
 
   -- Root url is for outside url, using to visit,
   --   and callback root url, works with redirect_uri
