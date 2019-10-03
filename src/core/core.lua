@@ -7,8 +7,8 @@ local Oauth = {}
 local mt = { __index = Oauth }
 
 function Oauth.new(self, options)
-  local debug = options.deug
-  
+  local debug = options.debug
+
   return setmetatable({
     options = options,
     debug = debug,
@@ -48,7 +48,7 @@ function Oauth.token(self, code, state)
   local res, err = requests.post(url, body)
   if err then
     ngx.say(err)
-    return ngx.exit(500)
+    return ngx.exit(ngx.HTTP_INTERNAL_SERVER_ERROR)
   end
 
   -- { scope, token_type, access_token }
@@ -60,7 +60,7 @@ function Oauth.token(self, code, state)
         context = self.options,
         response = res,
       }))
-      return ngx.exit(500)
+      return ngx.exit(ngx.HTTP_INTERNAL_SERVER_ERROR)
     end
 
     -- @ERROR LOG
@@ -70,7 +70,7 @@ function Oauth.token(self, code, state)
       response = res,
     }))
 
-    return ngx.exit(500)
+    return ngx.exit(ngx.HTTP_INTERNAL_SERVER_ERROR)
   end
 
   return res.access_token
@@ -88,7 +88,7 @@ function Oauth.user(self, token)
 
   if err then
     ngx.say(err)
-    return ngx.exit(500)
+    return ngx.exit(ngx.HTTP_INTERNAL_SERVER_ERROR)
   end
 
   -- return object.pick_alias(user, self.options.user_fields)
@@ -115,6 +115,7 @@ function Oauth.map_user(self, user)
             context = self.options,
             response = user,
           }))
+          return ngx.exit(ngx.HTTP_INTERNAL_SERVER_ERROR)
         end
 
         -- @ERROR LOG
@@ -123,7 +124,6 @@ function Oauth.map_user(self, user)
           context = self.options,
           response = user,
         }))
-
         return ngx.exit(ngx.HTTP_INTERNAL_SERVER_ERROR)
       end
 
