@@ -5,8 +5,11 @@ local string_split = object.string_split
 local merge = object.merge
 
 local PRODUCTION = 'production'
+local ALLOW_ALL = 'all'
+
 local root_url = getenv('ROOT_URL') or 'http://127.0.0.1:8080'
 local provider = getenv('PROVIDER')
+local allow_usernames_str = getenv('ALLOW_USERNAMES') or 'all'
 
 local redirect_uri = root_url..'/_oauth/'..provider
 
@@ -66,8 +69,11 @@ local config = {
     avatar = getenv('USER_AVATAR'),
   },
 
-  -- @4 Permission: Single User
-  allow_usernames = string_split(getenv('ALLOW_USERNAMES') or '', '(%a+),?'),
+  -- @4 Permission
+  --   Allow all
+  allow_all = allow_usernames_str == ALLOW_ALL,
+  --   Multiple User
+  allow_usernames = string_split(allow_usernames_str, '(%a+),?'),
 
   -- @TODO
   state = '',

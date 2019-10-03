@@ -128,6 +128,10 @@ function _M.validate_token(self, token)
 end
 
 function _M.validate_permission(self, user)
+  if config.allow_all then
+    return true
+  end
+
   local ok = object.includes(config.allow_usernames, user.username)
   if ok ~= true then
     ngx.log(ngx.INFO, '@Check.Validate(2) Permission: 403 Forbidden')
