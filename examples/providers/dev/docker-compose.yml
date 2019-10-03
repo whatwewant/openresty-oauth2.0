@@ -26,6 +26,8 @@ services:
       TOKEN_URL: https://github.com/login/oauth/access_token
       USER_INFO_URL: https://api.github.com/user
       #
+      TOKEN_DATA_IN_BODY: 1
+      #
       USER_INFO_HEADER: 'Authorization'
       #
       USER_USERNAME: login
