@@ -26,6 +26,8 @@ services:
       TOKEN_URL: https://gitee.com/oauth/token
       USER_INFO_URL: https://gitee.com/api/v5/user
       #
+      TOKEN_DATA_IN_BODY: 1
+      #
       USER_INFO_QUERY: access_token
       #
       USER_USERNAME: login
