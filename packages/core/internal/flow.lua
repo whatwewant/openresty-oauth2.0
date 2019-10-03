@@ -4,7 +4,7 @@ local Cookie = require('resty.cookie')
 local Aes = require('resty.aes')
 -- local String = require('resty.string')
 
-local Oauth = require('oauth/core/core')
+local Oauth = require('oauth/core/internal/oauth')
 local config = require('oauth/core/config')
 local object = require('oauth/utils/object')
 
@@ -128,9 +128,19 @@ function _M.validate_token(self, token)
 end
 
 function _M.validate_permission(self, user)
+  if config.allow_all then
+    return true
+  end
+
   local ok = object.includes(config.allow_usernames, user.username)
   if ok ~= true then
     ngx.log(ngx.INFO, '@Check.Validate(2) Permission: 403 Forbidden')
+
+    -- @TODO if uri ~= '/', redirect '/'
+    if not config.debug and ngx.var.uri ~= '/' then
+      return ngx.redirect('/')
+    end
+
     return ngx.exit(ngx.HTTP_FORBIDDEN)
   end
 end
@@ -150,7 +160,7 @@ function _M.check_done_or_go_authorize(self)
 
   -- @4 Check Permission
   self:validate_permission(user)
-  ngx.log(ngx.INFO, '@Check.Validate(1) Permission OK')
+  ngx.log(ngx.INFO, '@Check.Validate(2) Permission OK')
 end
 
 function _M.authorize(self)

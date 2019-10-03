@@ -17,29 +17,32 @@ services:
       # PROXY_READ_TIMEOUT: 60s
       # WORKER_PROCESSES: auto
       PROXY_PASS: http://web:8080
+      #
+      ROOT_URL: http://127.0.0.1:8080
+      PROVIDER: github
       CLIENT_ID: dc766a78a82e79b72000
       CLIENT_SECRET: CHANGE_CLIENT_SECRET
-      REDIRECT_URI: http://127.0.0.1:8080/_oauth/github
-      SCOPE: ''
+      # REDIRECT_URI: http://127.0.0.1:8080/_oauth/github
+      # SCOPE: ''
       #
-      AUTHORIZE_URL: https://github.com/login/oauth/authorize
-      TOKEN_URL: https://github.com/login/oauth/access_token
-      USER_INFO_URL: https://api.github.com/user
-      #
-      TOKEN_DATA_IN_BODY: 1
-      #
-      USER_INFO_HEADER: 'Authorization'
-      #
-      USER_USERNAME: login
-      USER_NICKNAME: name
-      USER_EMAIL: email
-      USER_AVATAR: avatar_url
+      # AUTHORIZE_URL: https://github.com/login/oauth/authorize
+      # TOKEN_URL: https://github.com/login/oauth/access_token
+      # USER_INFO_URL: https://api.github.com/user
+      # #
+      # TOKEN_DATA_IN_BODY: 1
+      # #
+      # USER_INFO_HEADER: 'Authorization'
+      # #
+      # USER_USERNAME: login
+      # USER_NICKNAME: name
+      # USER_EMAIL: email
+      # USER_AVATAR: avatar_url
       # 
       ALLOW_USERNAMES: whatwewant
       # Cookie Secret
       COOKIE_SECRET: whatwewant
     volumes:
-      - ../../../src:/usr/local/openresty/lualib/oauth
+      - ../../../packages:/usr/local/openresty/lualib/oauth
 
   web:
     image: nginx:1.17.2-alpine

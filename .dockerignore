@@ -3,5 +3,5 @@
 !config/endpoint.sh
 !config/watch.sh
 !config/nginx.conf.tmpl
-!src
+!packages
 !lib
