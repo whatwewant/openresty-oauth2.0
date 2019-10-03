@@ -100,7 +100,7 @@ http {
     }
 
     location / {
-      access_by_lua_file /usr/local/openresty/lualib/oauth/guard.lua;
+      access_by_lua_file /usr/local/openresty/lualib/oauth/core/guard.lua;
 
       proxy_pass ##PROXY_PASS##;
 
@@ -117,7 +117,7 @@ http {
     }
 
     location /_oauth/ {
-      access_by_lua_file /usr/local/openresty/lualib/oauth/authorize.lua;
+      access_by_lua_file /usr/local/openresty/lualib/oauth/core/authorize.lua;
     }
   }
 

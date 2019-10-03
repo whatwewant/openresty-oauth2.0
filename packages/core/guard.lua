@@ -1,4 +1,4 @@
-local OauthFlow = require('oauth/core/flow')
+local OauthFlow = require('oauth/core/core/flow')
 
 local flow = OauthFlow:new()
 

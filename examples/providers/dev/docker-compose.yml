@@ -17,6 +17,7 @@ services:
       # PROXY_READ_TIMEOUT: 60s
       # WORKER_PROCESSES: auto
       PROXY_PASS: http://web:8080
+      PROVIDER: github
       CLIENT_ID: dc766a78a82e79b72000
       CLIENT_SECRET: CHANGE_CLIENT_SECRET
       REDIRECT_URI: http://127.0.0.1:8080/_oauth/github
@@ -39,7 +40,7 @@ services:
       # Cookie Secret
       COOKIE_SECRET: whatwewant
     volumes:
-      - ../../../src:/usr/local/openresty/lualib/oauth
+      - ../../../packages:/usr/local/openresty/lualib/oauth
 
   web:
     image: nginx:1.17.2-alpine
