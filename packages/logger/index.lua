@@ -2,6 +2,8 @@ local cjson = require('cjson')
 local config = require('oauth/core/config')
 local object = require('oauth/utils/object')
 
+local version = '0.0.1'
+
 local stringify = cjson.encode
 -- local merge = object.merge
 
@@ -41,7 +43,7 @@ local function get_body(json)
   return stringify({
     logger = json,
     context = getContext(),
-    requestContext = get_request_context(),
+    request_context = get_request_context(),
   })
 end
 
@@ -62,6 +64,7 @@ local function debug(json, status)
   ngx.log(ngx.ERR, body)
 end
 
+_M.version = version
 _M.debug = debug
 _M.info = info
 
