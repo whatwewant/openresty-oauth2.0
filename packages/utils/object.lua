@@ -79,6 +79,7 @@ function _M.includes(table, key)
   return false
 end
 
+-- @DEPRECIATED, bugs
 function string_split(str, pattern)
   local _t = {}
   for k, _ in string.gmatch(str, pattern) do
