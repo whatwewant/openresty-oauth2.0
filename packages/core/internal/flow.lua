@@ -4,6 +4,9 @@ local Cookie = require('resty.cookie')
 local Aes = require('resty.aes')
 -- local String = require('resty.string')
 
+local format = string.format
+local stringify = cjson.encode
+
 local Oauth = require('oauth/core/internal/oauth')
 local config = require('oauth/core/config')
 local object = require('oauth/utils/object')
@@ -134,14 +137,40 @@ function _M.validate_permission(self, user)
 
   local ok = object.includes(config.allow_usernames, user.username)
   if ok ~= true then
-    ngx.log(ngx.INFO, '@Check.Validate(2) Permission: 403 Forbidden')
-
-    -- @TODO if uri ~= '/', redirect '/'
-    if not config.debug and ngx.var.uri ~= '/' then
-      return ngx.redirect('/')
+    -- @DEBUG debug mode
+    if config.debug then
+      ngx.say(stringify({
+        debug = self.debug,
+        message = '[validate_permission] @Check.Validate(2) Permission: 403 Forbidden',
+        context = config,
+        params = {
+          username = user.username,
+          allow_usernames = config.allow_usernames,
+        },
+      }))
+      return ngx.exit(ngx.HTTP_FORBIDDEN)
     end
 
-    return ngx.exit(ngx.HTTP_FORBIDDEN)
+    -- @LOG not debug
+    ngx.log(
+      ngx.INFO,
+      stringify({
+        debug = self.debug,
+        message = '[validate_permission] @Check.Validate(2) Permission: 403 Forbidden',
+        context = config,
+        params = {
+          username = user.username,
+          allow_usernames = config.allow_usernames,
+        },
+      })
+    )
+
+    -- @TODO if uri ~= '/', redirect '/'
+    if ngx.var.uri ~= '/' then
+      -- @PROD production mode
+      -- @TODO return ngx.exit(ngx.HTTP_FORBIDDEN)
+      return ngx.redirect('/')
+    end
   end
 end
 

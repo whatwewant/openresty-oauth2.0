@@ -1,10 +1,10 @@
 local getenv = os.getenv
 local object = require('oauth/utils/object')
 
-local string_split = object.string_split
+local split = object.split
 local merge = object.merge
 
-local version = '1.0.0'
+local version = '1.0.1'
 
 local PRODUCTION = 'production'
 local ALLOW_ALL = 'all'
@@ -78,7 +78,7 @@ local config = {
   --   Allow all
   allow_all = allow_usernames_str == ALLOW_ALL,
   --   Multiple User
-  allow_usernames = string_split(allow_usernames_str, '(%a+),?'),
+  allow_usernames = split(allow_usernames_str, ','),
 
   -- @TODO
   state = '',
