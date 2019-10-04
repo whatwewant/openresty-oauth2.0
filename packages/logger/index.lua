@@ -2,7 +2,7 @@ local cjson = require('cjson')
 local config = require('oauth/core/config')
 local object = require('oauth/utils/object')
 
-local version = '0.0.1'
+local version = '0.0.2'
 
 local stringify = cjson.encode
 -- local merge = object.merge
