@@ -63,7 +63,20 @@ function _M.merge(t1, t2, t3)
 end
 
 function _M.includes(table, key)
-  return table[key] ~= nil and table[key] ~= false
+  -- object
+  local obj_included = table[key] ~= nil and table[key] ~= false
+  if obj_included then
+    return true
+  end
+
+  -- array
+  for i, k in ipairs(table) do
+    if k == key then
+      return true
+    end
+  end
+
+  return false
 end
 
 function string_split(str, pattern)
