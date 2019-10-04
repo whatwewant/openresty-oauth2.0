@@ -140,7 +140,6 @@ function _M.validate_permission(self, user)
   if not ok then
     logger.debug({
       message = '[validate_permission] @Check.Validate(2) Permission: 403 Forbidden',
-      context = config,
       params = {
         username = user.username,
         allow_usernames = config.allow_usernames,
@@ -157,10 +156,6 @@ function _M.validate_permission(self, user)
     -- @TODO callback url is /_oauth/{provider}, so if it is impossible to get here
     logger.debug({
       message = '[validate_permission] callback url is /_oauth/{provider}, so if it is impossible to get here',
-      context = config,
-      req = {
-        uri = ngx.var.uri,
-      },
       params = {
         username = user.username,
         allow_usernames = config.allow_usernames,

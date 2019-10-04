@@ -59,7 +59,6 @@ function Oauth.token(self, code, state)
   else
     logger.debug({
       message = '[token] please set token_data_in_body or token_data_in_query',
-      context = self.options,
       response = res,
     })
 
@@ -86,7 +85,6 @@ function Oauth.token(self, code, state)
   if res.access_token == nil then
     logger.debug({
       message = '[token] access_token is nil, please see response',
-      context = self.options,
       response = res,
     })
 
@@ -189,7 +187,6 @@ function Oauth.map_user(self, user)
       if not value then
         logger.debug({
           message = '[map_user] user fields('..key..') failed, please look at the response',
-          context = self.options,
           response = user,
         })
 
