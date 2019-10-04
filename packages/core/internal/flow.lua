@@ -4,12 +4,13 @@ local Cookie = require('resty.cookie')
 local Aes = require('resty.aes')
 -- local String = require('resty.string')
 
-local format = string.format
-local stringify = cjson.encode
-
 local Oauth = require('oauth/core/internal/oauth')
 local config = require('oauth/core/config')
+local logger = require('logger/index')
 local object = require('oauth/utils/object')
+
+local format = string.format
+local stringify = cjson.encode
 
 local _M = {}
 local mt = { __index = _M }
@@ -136,34 +137,14 @@ function _M.validate_permission(self, user)
   end
 
   local ok = object.includes(config.allow_usernames, user.username)
-  if ok ~= true then
-    -- @DEBUG debug mode
-    if config.debug then
-      ngx.say(stringify({
-        debug = self.debug,
-        message = '[validate_permission] @Check.Validate(2) Permission: 403 Forbidden',
-        context = config,
-        params = {
-          username = user.username,
-          allow_usernames = config.allow_usernames,
-        },
-      }))
-      return ngx.exit(ngx.HTTP_FORBIDDEN)
-    end
-
-    -- @LOG not debug
-    ngx.log(
-      ngx.INFO,
-      stringify({
-        debug = self.debug,
-        message = '[validate_permission] @Check.Validate(2) Permission: 403 Forbidden',
-        context = config,
-        params = {
-          username = user.username,
-          allow_usernames = config.allow_usernames,
-        },
-      })
-    )
+  if not ok then
+    logger.debug({
+      message = '[validate_permission] @Check.Validate(2) Permission: 403 Forbidden',
+      params = {
+        username = user.username,
+        allow_usernames = config.allow_usernames,
+      },
+    }, ngx.HTTP_FORBIDDEN)
 
     -- @TODO if uri ~= '/', redirect '/'
     if ngx.var.uri ~= '/' then
@@ -171,6 +152,17 @@ function _M.validate_permission(self, user)
       -- @TODO return ngx.exit(ngx.HTTP_FORBIDDEN)
       return ngx.redirect('/')
     end
+
+    -- @TODO callback url is /_oauth/{provider}, so if it is impossible to get here
+    logger.debug({
+      message = '[validate_permission] callback url is /_oauth/{provider}, so if it is impossible to get here',
+      params = {
+        username = user.username,
+        allow_usernames = config.allow_usernames,
+      },
+    }, ngx.HTTP_FORBIDDEN)
+
+    return ngx.exit(ngx.HTTP_FORBIDDEN)
   end
 end
 

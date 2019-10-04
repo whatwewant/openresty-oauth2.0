@@ -1,5 +1,6 @@
 
 local cjson = require('cjson')
+local logger = require('logger/index')
 local requests = require('oauth/utils/requests')
 local object = require('oauth/utils/object')
 
@@ -56,22 +57,11 @@ function Oauth.token(self, code, state)
   elseif self.options.token_data_in_query then
     res, err = requests.post(url..'?'..ngx.encode_args(data))
   else
-    if self.debug then
-      ngx.say(stringify({
-        debug = self.debug,
-        message = '[token] please set token_data_in_body or token_data_in_query',
-        context = self.options,
-        response = res,
-      }))
-      return ngx.exit(ngx.HTTP_INTERNAL_SERVER_ERROR)
-    end
-
-    ngx.log(ngx.ERR, stringify({
-      debug = self.debug,
+    logger.debug({
       message = '[token] please set token_data_in_body or token_data_in_query',
-      context = self.options,
       response = res,
-    }))
+    })
+
     return ngx.exit(ngx.HTTP_INTERNAL_SERVER_ERROR)
   end
 
@@ -93,24 +83,10 @@ function Oauth.token(self, code, state)
 
   -- { scope, token_type, access_token }
   if res.access_token == nil then
-    -- @DEBUG
-    if self.debug then
-      ngx.say(stringify({
-        debug = self.debug,
-        message = '[token] access_token is nil, please see response',
-        context = self.options,
-        response = res,
-      }))
-      return ngx.exit(ngx.HTTP_INTERNAL_SERVER_ERROR)
-    end
-
-    -- @ERROR LOG
-    ngx.log(ngx.ERR, stringify({
-      debug = self.debug,
+    logger.debug({
       message = '[token] access_token is nil, please see response',
-      context = self.options,
       response = res,
-    }))
+    })
 
     return ngx.exit(ngx.HTTP_INTERNAL_SERVER_ERROR)
   end
@@ -209,24 +185,11 @@ function Oauth.map_user(self, user)
 
       -- has v_map, but value is nil, need debug
       if not value then
-        -- @DEBUG
-        if self.debug then
-          ngx.say(stringify({
-            debug = self.debug,
-            message = '[map_user] user fields('..key..') failed, please look at the response',
-            context = self.options,
-            response = user,
-          }))
-          return ngx.exit(ngx.HTTP_INTERNAL_SERVER_ERROR)
-        end
-
-        -- @ERROR LOG
-        ngx.log(ngx.ERR, stringify({
-          debug = self.debug,
-          message = '[map_user] user fields ('..key..') failed, please look at the response',
-          context = self.options,
+        logger.debug({
+          message = '[map_user] user fields('..key..') failed, please look at the response',
           response = user,
-        }))
+        })
+
         return ngx.exit(ngx.HTTP_INTERNAL_SERVER_ERROR)
       end
 
