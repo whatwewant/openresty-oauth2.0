@@ -3,6 +3,7 @@ local cjson = require('cjson')
 local requests = require('oauth/utils/requests')
 local object = require('oauth/utils/object')
 
+local stringify = cjson.encode
 local get = object.get
 
 local Oauth = {}
@@ -56,7 +57,7 @@ function Oauth.token(self, code, state)
     res, err = requests.post(url..'?'..ngx.encode_args(data))
   else
     if self.debug then
-      ngx.say(cjson.encode({
+      ngx.say(stringify({
         debug = self.debug,
         message = '[token] please set token_data_in_body or token_data_in_query',
         context = self.options,
@@ -65,7 +66,7 @@ function Oauth.token(self, code, state)
       return ngx.exit(ngx.HTTP_INTERNAL_SERVER_ERROR)
     end
 
-    ngx.log(ngx.ERR, cjson.encode({
+    ngx.log(ngx.ERR, stringify({
       debug = self.debug,
       message = '[token] please set token_data_in_body or token_data_in_query',
       context = self.options,
@@ -75,7 +76,7 @@ function Oauth.token(self, code, state)
   end
 
   -- if true then
-  --   ngx.say(cjson.encode({
+  --   ngx.say(stringify({
   --     message = 'core.token',
   --     url = url,
   --     body = body,
@@ -94,7 +95,7 @@ function Oauth.token(self, code, state)
   if res.access_token == nil then
     -- @DEBUG
     if self.debug then
-      ngx.say(cjson.encode({
+      ngx.say(stringify({
         debug = self.debug,
         message = '[token] access_token is nil, please see response',
         context = self.options,
@@ -104,7 +105,7 @@ function Oauth.token(self, code, state)
     end
 
     -- @ERROR LOG
-    ngx.log(ngx.ERR, cjson.encode({
+    ngx.log(ngx.ERR, stringify({
       debug = self.debug,
       message = '[token] access_token is nil, please see response',
       context = self.options,
@@ -134,7 +135,7 @@ function Oauth.user(self, token)
   local user, err = requests.get(url, headers)
 
   if err then
-    ngx.say(cjson.encode({
+    ngx.say(stringify({
       context = {
         url = base_url,
         header = header,
@@ -149,7 +150,7 @@ function Oauth.user(self, token)
 
   -- @TODO
   -- if true then
-  --   ngx.say(cjson.encode({
+  --   ngx.say(stringify({
   --     context = {
   --       url = base_url,
   --       header = header,
@@ -210,7 +211,7 @@ function Oauth.map_user(self, user)
       if not value then
         -- @DEBUG
         if self.debug then
-          ngx.say(cjson.encode({
+          ngx.say(stringify({
             debug = self.debug,
             message = '[map_user] user fields('..key..') failed, please look at the response',
             context = self.options,
@@ -220,7 +221,7 @@ function Oauth.map_user(self, user)
         end
 
         -- @ERROR LOG
-        ngx.log(ngx.ERR, cjson.encode({
+        ngx.log(ngx.ERR, stringify({
           debug = self.debug,
           message = '[map_user] user fields ('..key..') failed, please look at the response',
           context = self.options,
