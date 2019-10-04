@@ -56,8 +56,10 @@ local function debug(json, status)
   local body = get_body(json)
 
   if debug_mode then
-    ngx.say(body)
+    -- set content type json
     ngx.header['Content-Type'] = 'application/json; charset=utf-8'
+
+    ngx.say(body)
     return ngx.exit(status or ngx.HTTP_INTERNAL_SERVER_ERROR)
   end
 
