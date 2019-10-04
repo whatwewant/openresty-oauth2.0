@@ -1,6 +1,6 @@
 local _M = {}
 
-function _M.keys(table)
+function keys(table)
   local keys = {}
   local i = 1
   for k, _ in ipairs(table) do
@@ -10,7 +10,7 @@ function _M.keys(table)
   return keys
 end
 
-function _M.values(table)
+function values(table)
   local values = {}
   local i = 1
   for _, v in ipairs(table) do
@@ -20,7 +20,7 @@ function _M.values(table)
   return values
 end
 
-function _M.pick(table, keys)
+function pick(table, keys)
   local _object = {}
 
   for i, key in ipairs(keys) do
@@ -32,7 +32,7 @@ function _M.pick(table, keys)
   return _object
 end
 
-function _M.pick_alias(table, alias)
+function pick_alias(table, alias)
   local _object = {}
 
   for key, value in pairs(alias) do
@@ -44,7 +44,7 @@ function _M.pick_alias(table, alias)
   return _object
 end
 
-function _M.merge(t1, t2, t3)
+function merge(t1, t2, t3)
   local _t = t1 or {}
 
   if t2 then
@@ -62,7 +62,7 @@ function _M.merge(t1, t2, t3)
   return _t
 end
 
-function _M.includes(table, key)
+function includes(table, key)
   -- object
   local obj_included = table[key] ~= nil and table[key] ~= false
   if obj_included then
@@ -118,6 +118,12 @@ function get(object, path_str)
   return nil
 end
 
+_M.keys = keys
+_M.values = values
+_M.pick = pick
+_M.pick_alias = pick_alias
+_M.merge = merge
+_M.includes = includes
 _M.split = split
 _M.string_split = string_split
 _M.get = get
