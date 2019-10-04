@@ -1,6 +1,6 @@
 local _M = {}
 
-function keys(table)
+local function keys(table)
   local keys = {}
   local i = 1
   for k, _ in ipairs(table) do
@@ -10,7 +10,7 @@ function keys(table)
   return keys
 end
 
-function values(table)
+local function values(table)
   local values = {}
   local i = 1
   for _, v in ipairs(table) do
@@ -20,7 +20,7 @@ function values(table)
   return values
 end
 
-function pick(table, keys)
+local function pick(table, keys)
   local _object = {}
 
   for i, key in ipairs(keys) do
@@ -32,7 +32,7 @@ function pick(table, keys)
   return _object
 end
 
-function pick_alias(table, alias)
+local function pick_alias(table, alias)
   local _object = {}
 
   for key, value in pairs(alias) do
@@ -44,7 +44,7 @@ function pick_alias(table, alias)
   return _object
 end
 
-function merge(t1, t2, t3)
+local function merge(t1, t2, t3)
   local _t = t1 or {}
 
   if t2 then
@@ -62,7 +62,7 @@ function merge(t1, t2, t3)
   return _t
 end
 
-function includes(table, key)
+local function includes(table, key)
   -- object
   local obj_included = table[key] ~= nil and table[key] ~= false
   if obj_included then
@@ -80,7 +80,7 @@ function includes(table, key)
 end
 
 -- @DEPRECIATED, bugs
-function string_split(str, pattern)
+local function string_split(str, pattern)
   local _t = {}
   for k, _ in string.gmatch(str, pattern) do
     _t[k] = true
@@ -88,7 +88,7 @@ function string_split(str, pattern)
   return _t
 end
 
-function split(str, seperator)
+local function split(str, seperator)
   local _t = {}
   local pattern = '([^'..seperator..']+)'
   for k, _ in string.gmatch(str, pattern) do
@@ -97,7 +97,7 @@ function split(str, seperator)
   return _t
 end
 
-function get(object, path_str)
+local function get(object, path_str)
   local paths = split(path_str, '.')
   local parent = object
   local len = #paths
