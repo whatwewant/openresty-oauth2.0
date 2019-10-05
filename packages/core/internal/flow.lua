@@ -2,6 +2,7 @@ local getenv = os.getenv
 local cjson = require('cjson')
 local Cookie = require('resty.cookie')
 local Aes = require('resty.aes')
+local Lru = require('resty.lrucache')
 -- local String = require('resty.string')
 
 local Oauth = require('oauth/core/internal/oauth')
@@ -11,6 +12,9 @@ local object = require('oauth/utils/object')
 
 local format = string.format
 local stringify = cjson.encode
+
+local MAX_SIGNATURE_CACHE_SIZE = 200
+local signature_cache = Lru.new(MAX_SIGNATURE_CACHE_SIZE)
 
 local _M = {}
 local mt = { __index = _M }
@@ -95,7 +99,15 @@ function _M.validate_signature(self, signature)
     return self.oauth:authorize()
   end
 
-  local is_valid = self.aes:decrypt(ndk.set_var.set_decode_hex(signature))
+  local is_valid = signature_cache:get(signature)
+  if not is_valid then
+    logger.log(format('[validate_signature] signature not hit cache, using ase:descript'))
+    
+    is_valid = self.aes:decrypt(ndk.set_var.set_decode_hex(signature))
+    signature_cache:set(signature, true, 60 * 5) -- @TODO 5 minutes
+  else
+    logger.log('[validate_signature] signature hit cache')
+  end
 
   -- ngx.say(signature..': '..tostring(is_valid))
 
