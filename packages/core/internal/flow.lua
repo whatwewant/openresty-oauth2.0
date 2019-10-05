@@ -166,6 +166,49 @@ function _M.validate_permission(self, user)
   end
 end
 
+function _M.get_code(self)
+  local args = ngx.req.get_uri_args()
+  -- @1 Get Code
+  local code = args.code
+
+  if code == nil then
+    logger.debug({
+      message = string.format('No Code Provided, or Invalid Uri Visit In: %s, this is used to authorize callback only', ngx.var.uri),
+    })
+
+    return ngx.exit(ngx.HTTP_NOT_FOUND)
+  end
+
+  return code
+end
+
+function _M.get_provider(self)
+  local uri = ngx.var.uri
+  local matched = ngx.re.match(uri, [[^\/_oauth\/([^\/]+)]], 'jo')
+
+  if matched == nil or matched[1] == nil then
+    -- @TODO
+    return ngx.exit(ngx.HTTP_NOT_FOUND)
+  end
+
+  -- @1.1 Get App Name (Provider)
+  local provider = matched[1]
+  ngx.log(ngx.INFO, '@Authorize(1.1) Get App Name: ', (provider or 'null'))
+
+  if provider ~= config.provider then
+    logger.debug({
+      message = string.format('[get_provider] invalid callback url with provider(%s), should be %s', provider, config.provider),
+      params = {
+        provider = provider,
+      },
+    })
+
+    return ngx.exit(ngx.HTTP_INTERNAL_SERVER_ERROR)
+  end
+
+  return provider
+end
+
 function _M.check_done_or_go_authorize(self)
   -- @1 Get Token
   local token = self:get_token()
@@ -185,27 +228,13 @@ function _M.check_done_or_go_authorize(self)
 end
 
 function _M.authorize(self)
-  local args = ngx.req.get_uri_args()
   -- @1 Get Code
-  local code = args.code
+  local code = self:get_code()
   ngx.log(ngx.INFO, '@Authorize(1) Get Code: ', (code or 'null'))
 
-  if code == nil then
-    -- @TODO
-    return ngx.exit(ngx.HTTP_NOT_FOUND)
-  end
-
-  local uri = ngx.var.uri
-  local matched = ngx.re.match(uri, [[^\/_oauth\/([^\/]+)]], 'jo')
-
-  if matched == nil or matched[1] == nil then
-    -- @TODO
-    return ngx.exit(ngx.HTTP_NOT_FOUND)
-  end
-
-  -- @1.1 Get App Name
-  local app_name = matched[1]
-  ngx.log(ngx.INFO, '@Authorize(1.1) Get App Name: ', (app_name or 'null'))
+  -- @1.1 Get App Name (Provider)
+  local provider = self:get_provider()
+  ngx.log(ngx.INFO, '@Authorize(1.1) Get App Name: ', (provider or 'null'))
 
   -- @2 Get Token
   local token = self.oauth:token(code)
