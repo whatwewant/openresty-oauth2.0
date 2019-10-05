@@ -11,10 +11,10 @@ ENV CLIENT_MAX_BODY_SIZE 1m
 ENV PROXY_READ_TIMEOUT 60s
 ENV WORKER_PROCESSES auto
 
-COPY ./config/watch.sh /usr/local/bin
+COPY ./packages/core/config/watch.sh /usr/local/bin
 
-COPY ./config/endpoint.sh /
-COPY ./config/nginx.conf.tmpl /
+COPY ./packages/core/config/endpoint.sh /
+COPY ./packages/core/config/nginx.conf.tmpl /
 COPY ./packages/lib /usr/local/openresty/lualib
 COPY ./packages /usr/local/openresty/lualib/oauth
 # COPY ./src /lua
