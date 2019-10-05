@@ -1,0 +1,37 @@
+version: '3'
+
+services:
+  auth:
+    restart: always
+    # image: whatwewant/openresty-oauth2.0:1.0.4
+    build:
+      context: ../../..
+      dockerfile: Dockerfile
+    ports:
+      - 8080:80
+      - 8090:8090
+    environment:
+      # SERVER_NAME: localhost
+      # CLIENT_MAX_BODY_SIZE: 1m
+      # PROXY_READ_TIMEOUT: 60s
+      # WORKER_PROCESSES: auto
+      ROOT_URL: http://127.0.0.1:8080
+      PROVIDER: github
+      PROXY_PASS: http://vscode:8443
+      CLIENT_ID: dc766a78a82e79b72000
+      CLIENT_SECRET: CHANGE_CLIENT_SECRET
+      # SCOPE: ''
+      ALLOW_USERNAMES: whatwewant
+      # Cookie Secret
+      COOKIE_SECRET: randomxxxxxxx
+
+  vscode:
+    image: codercom/code-server
+    volumes:
+      - ./data/project:/root/project
+    ports:
+     - 10840:8443
+    entrypoint:
+      - code-server
+      - --allow-http
+      - --no-auth
