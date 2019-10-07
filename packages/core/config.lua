@@ -16,6 +16,9 @@ local allow_usernames_str = getenv('ALLOW_USERNAMES') or 'all'
 
 local redirect_uri = root_url..'/_oauth/'..provider
 
+local client_id = getenv('CLIENT_ID')
+local client_secret = getenv('CLIENT_SECRET')
+
 local config = {
   version = version,
   
@@ -34,7 +37,7 @@ local config = {
   provider = provider,
 
   -- @1 AUTHORIZE INFO
-  client_id = getenv('CLIENT_ID'),
+  client_id = client_id,
   -- @example http://127.0.0.1:8080/_oauth/github
   redirect_uri = redirect_uri, -- getenv('REDIRECT_URI'),
 
@@ -49,7 +52,7 @@ local config = {
   -- @2.2 POST TOKEN_URL
   --  body: { client_id, client_secret, redirect_uri, code, state }
   token_url = getenv('TOKEN_URL'),
-  client_secret = getenv('CLIENT_SECRET'),
+  client_secret = client_secret,
   -- using to get access token, default: authorization_code
   grant_type = getenv('GRANT_TYPE') or 'authorization_code',
 
