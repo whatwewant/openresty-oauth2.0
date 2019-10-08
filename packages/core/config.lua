@@ -108,14 +108,14 @@ local config = {
 
   -- Cookie Field
   cookie_fields = {
-    username = 'uid',
-    nickname = 'un',
-    avatar = 'ua',
-    signature = 'sig', -- signature is for safe
+    username = '_zo_uid',
+    nickname = '_zo_un',
+    avatar = '_zo_ua',
+    signature = '_zo_sig', -- signature is for safe
   },
 
   -- Cookie Token
-  cookie_token = 'ut',
+  cookie_token = '_zo_ut',
 }
 
 local provider_config = require('oauth/providers/'..provider..'/config')
