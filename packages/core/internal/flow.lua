@@ -2,6 +2,7 @@ local getenv = os.getenv
 local cjson = require('cjson')
 local Cookie = require('resty.cookie')
 local Aes = require('resty.aes')
+local Lru = require('resty.lrucache')
 -- local String = require('resty.string')
 
 local Oauth = require('oauth/core/internal/oauth')
@@ -11,6 +12,9 @@ local object = require('oauth/utils/object')
 
 local format = string.format
 local stringify = cjson.encode
+
+local MAX_SIGNATURE_CACHE_SIZE = 200
+local signature_cache = Lru.new(MAX_SIGNATURE_CACHE_SIZE)
 
 local _M = {}
 local mt = { __index = _M }
@@ -25,8 +29,12 @@ function _M.new(self)
   local aes = Aes:new(config.cookie_secret)
 
   if not cookie then
-    ngx.log(ngx.ERR, err)
-    return
+    logger.debug({
+      message = 'resty.cookie new error, please check the lib',
+      error = err,
+    })
+
+    return ngx.exit(ngx.HTTP_INTERNAL_SERVER_ERROR)
   end
 
   return setmetatable({
@@ -39,9 +47,13 @@ end
 function _M.get_token(self)
   local token, err = self.cookie:get(COOKIES_TOKEN)
 
-  if err then
-    ngx.log(ngx.ERR, err)
-    return nil
+  if token ~= nil and err then
+    logger.debug({
+      message = '[get_token] get token from cookie error',
+      error = err,
+    })
+
+    return ngx.exit(ngx.HTTP_INTERNAL_SERVER_ERROR)
   end
 
   return token
@@ -55,15 +67,23 @@ function _M.get_user(self)
     local value, err = self.cookie:get(v)
 
     if err then
-      ngx.log(ngx.ERR, err)
-      return
+      logger.debug({
+        message = string.format('[get_user] get user(%s: %s) from cookie error', v, value),
+        error = err,
+      })
+  
+      return ngx.exit(ngx.HTTP_INTERNAL_SERVER_ERROR)
     end
 
     user[k] = value
   end
 
   if not user.username then
-    ngx.log(ngx.INFO, 'Invalid User.username field')
+    logger.debug({
+      message = format('Invalid User.username field (username is nil by cookie key (%s))', COOKIES_USER.username),
+      user = user,
+    })
+
     return ngx.exit(ngx.INTERNAL_SERVER_ERROR)
   end
 
@@ -75,17 +95,25 @@ end
 function _M.validate_signature(self, signature)
   if not signature then
     -- @TODO should remember current path for redirect
-    ngx.log(ngx.INFO, 'Invalid Signature, Go Authorize')
+    logger.log('Invalid Signature, Go Authorize')
     return self.oauth:authorize()
   end
 
-  local is_valid = self.aes:decrypt(ndk.set_var.set_decode_hex(signature))
+  local is_valid = signature_cache:get(signature)
+  if not is_valid then
+    logger.log(format('[validate_signature] signature not hit cache, using ase:descript'))
+    
+    is_valid = self.aes:decrypt(ndk.set_var.set_decode_hex(signature))
+    signature_cache:set(signature, true, 60 * 5) -- @TODO 5 minutes
+  else
+    logger.log('[validate_signature] signature hit cache')
+  end
 
   -- ngx.say(signature..': '..tostring(is_valid))
 
   if not is_valid then
     -- return ngx.exit(ngx.HTTP_FORBIDDEN)
-    ngx.log(ngx.INFO, 'Invalid Signature (', signature, '), Go Authorize')
+    logger.log(format('Invalid Signature (%s), Go Authorize', signature))
     ngx.sleep(1)
     return self.oauth:authorize()
   end
@@ -107,8 +135,12 @@ function _M.set_token(self, user, token)
     }, config.cookie_options))
 
     if err then
-      ngx.log(ngx.ERR, err)
-      return
+      logger.debug({
+        message = format('[set_token] failed to set user to cookie (%s: %s)', k, user[k]),
+        error = err,
+      })
+      
+      return ngx.exit(ngx.HTTP_INTERNAL_SERVER_ERROR)
     end
   end
 
@@ -119,14 +151,18 @@ function _M.set_token(self, user, token)
   }, config.cookie_options))
 
   if err then
-    ngx.log(ngx.ERR, err)
-    return
+    logger.debug({
+      message = format('[set_token] failed to set token to cookie (%s: %s)', COOKIES_TOKEN, token),
+      error = err,
+    })
+
+    return ngx.exit(ngx.HTTP_INTERNAL_SERVER_ERROR)
   end
 end
 
 function _M.validate_token(self, token)
   if token == nil then
-    ngx.log(ngx.INFO, '@Check.Validate(1) Token: Go to authorize')
+    logger.log('@Check.Validate(1) Token: Go to authorize')
     return self.oauth:authorize()
   end
 end
@@ -193,7 +229,7 @@ function _M.get_provider(self)
 
   -- @1.1 Get App Name (Provider)
   local provider = matched[1]
-  ngx.log(ngx.INFO, '@Authorize(1.1) Get App Name: ', (provider or 'null'))
+  logger.log(format('@Authorize(1.1) Get App Name: %s', (provider or 'null')))
 
   if provider ~= config.provider then
     logger.debug({
@@ -212,51 +248,51 @@ end
 function _M.check_done_or_go_authorize(self)
   -- @1 Get Token
   local token = self:get_token()
-  ngx.log(ngx.INFO, '@Check.Prepare(1) Get Token: ', (token or 'null'))
+  logger.log(format('@Check.Prepare(1) Get Token: %s', (token or 'null')))
   
   -- @2 Verify Token
   self:validate_token(token)
-  ngx.log(ngx.INFO, '@Check.Validate(1) Token OK')
+  logger.log('@Check.Validate(1) Token OK')
 
   -- @3 Get User
   local user = self:get_user()
-  ngx.log(ngx.INFO, '@Check.Prepare(2) Get User: ', (user and user.username or 'null'))
+  logger.log(format('@Check.Prepare(2) Get User: %s', (user and user.username or 'null')))
 
   -- @4 Check Permission
   self:validate_permission(user)
-  ngx.log(ngx.INFO, '@Check.Validate(2) Permission OK')
+  logger.log('@Check.Validate(2) Permission OK')
 end
 
 function _M.authorize(self)
   -- @1 Get Code
   local code = self:get_code()
-  ngx.log(ngx.INFO, '@Authorize(1) Get Code: ', (code or 'null'))
+  logger.log(format('@Authorize(1) Get Code: %s', (code or 'null')))
 
   -- @1.1 Get App Name (Provider)
   local provider = self:get_provider()
-  ngx.log(ngx.INFO, '@Authorize(1.1) Get App Name: ', (provider or 'null'))
+  logger.log(format('@Authorize(1.1) Get App Name: %s', (provider or 'null')))
 
   -- @2 Get Token
   local token = self.oauth:token(code)
-  ngx.log(ngx.INFO, '@Authorize(2) Get Token: ', (token or 'null'))
+  logger.log(format('@Authorize(2) Get Token: %s', (token or 'null')))
 
   -- @3 Get User
   local user = self.oauth:user(token)
-  ngx.log(ngx.INFO, '@Authorize(3) Get User: ', (user and user.username or 'null'))
+  logger.log(format('@Authorize(3) Get User: %s', (user and user.username or 'null')))
 
   -- @4 Set Token
   self:set_token(user, token)
-  ngx.log(ngx.INFO, '@Authorize(4) Set Token Done')
+  logger.log('@Authorize(4) Set Token Done')
 
   -- @5 Check Permission
   self:validate_permission(user)
-  ngx.log(ngx.INFO, '@Authorize(5) Check Permission Done')
+  logger.log('@Authorize(5) Check Permission Done')
 
   -- @6 Redirect
   -- @TODO default /
   local next = '/'
   ngx.redirect(next)
-  ngx.log(ngx.INFO, '@Authorize(6) Redirect To: ', next)
+  logger.log(format('@Authorize(6) Redirect To: %s', next))
 end
 
 return _M

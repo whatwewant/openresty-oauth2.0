@@ -4,7 +4,7 @@ local object = require('oauth/utils/object')
 local split = object.split
 local merge = object.merge
 
-local version = '1.0.4'
+local version = '1.0.5'
 
 local PRODUCTION = 'production'
 local ALLOW_ALL = 'all'
@@ -15,6 +15,15 @@ local provider = getenv('PROVIDER')
 local allow_usernames_str = getenv('ALLOW_USERNAMES') or 'all'
 
 local redirect_uri = root_url..'/_oauth/'..provider
+local response_type = getenv('RESPONSE_TYPE') or 'code'
+local scope = getenv('SCOPE') or ''
+
+local authorize_url = getenv('AUTHORIZE_URL')
+local token_url = getenv('TOKEN_URL')
+local user_info_url = getenv('USER_INFO_URL')
+
+local client_id = getenv('CLIENT_ID')
+local client_secret = getenv('CLIENT_SECRET')
 
 local config = {
   version = version,
@@ -34,22 +43,22 @@ local config = {
   provider = provider,
 
   -- @1 AUTHORIZE INFO
-  client_id = getenv('CLIENT_ID'),
+  client_id = client_id,
   -- @example http://127.0.0.1:8080/_oauth/github
   redirect_uri = redirect_uri, -- getenv('REDIRECT_URI'),
 
   -- @2 URL INFO
   -- @2.1 GET AUTHORIZE_URL
   --   args: ?client_id=CLIENT_ID&redirect_uri=REDIRECT_URI&scope=SCOPE&state=xxx
-  authorize_url = getenv('AUTHORIZE_URL'),
+  authorize_url = authorize_url,
   -- using to authorize, default: code
-  response_type = getenv('RESPONSE_TYPE') or 'code',
-  scope = getenv('SCOPE'),
+  response_type = response_type,
+  scope = scope,
 
   -- @2.2 POST TOKEN_URL
   --  body: { client_id, client_secret, redirect_uri, code, state }
-  token_url = getenv('TOKEN_URL'),
-  client_secret = getenv('CLIENT_SECRET'),
+  token_url = token_url,
+  client_secret = client_secret,
   -- using to get access token, default: authorization_code
   grant_type = getenv('GRANT_TYPE') or 'authorization_code',
 
@@ -59,7 +68,7 @@ local config = {
 
   -- @2.3 GET USER_INFO_URL
   --  header: { Authorization: Bearer Token; }
-  user_info_url = getenv('USER_INFO_URL'),
+  user_info_url = user_info_url,
 
   -- @2.3.1 Extendable Token in Header, Query, Body
   user_info_header = getenv('USER_INFO_HEADER'),
@@ -99,14 +108,14 @@ local config = {
 
   -- Cookie Field
   cookie_fields = {
-    username = 'uid',
-    nickname = 'un',
-    avatar = 'ua',
-    signature = 'sig', -- signature is for safe
+    username = '_zo_uid',
+    nickname = '_zo_un',
+    avatar = '_zo_ua',
+    signature = '_zo_sig', -- signature is for safe
   },
 
   -- Cookie Token
-  cookie_token = 'ut',
+  cookie_token = '_zo_ut',
 }
 
 local provider_config = require('oauth/providers/'..provider..'/config')

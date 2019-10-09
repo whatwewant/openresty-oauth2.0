@@ -5,6 +5,7 @@ local object = require('oauth/utils/object')
 local version = '0.0.2'
 
 local stringify = cjson.encode
+local format = string.format
 -- local merge = object.merge
 
 local debug_mode = config.debug
@@ -47,9 +48,13 @@ local function get_body(json)
   })
 end
 
-local function info(json)
-  local body = get_body(json)
-  ngx.info(ngx.ERR, body)
+local function info(message, code)
+  if type(message) == 'string' then
+    return ngx.log(ngx.INFO, format('[%s] %s', code or 200, message))
+  end
+
+  local body = message
+  ngx.log(ngx.INFO, cjson.encode(body))
 end
 
 local function debug(json, status)
@@ -67,6 +72,7 @@ local function debug(json, status)
 end
 
 _M.version = version
+_M.log = info
 _M.debug = debug
 _M.info = info
 

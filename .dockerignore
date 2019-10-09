@@ -5,3 +5,4 @@
 !config/nginx.conf.tmpl
 !packages
 !lib
+!.env

@@ -89,6 +89,9 @@ http {
     client_max_body_size ##CLIENT_MAX_BODY_SIZE##;
     proxy_read_timeout ##PROXY_READ_TIMEOUT##;
 
+    # avoid HTTP 411 Length Required
+    chunked_transfer_encoding on;
+
     location ~* \.(js|css|gif|png|jpg|jpeg|svg)$ {
       proxy_pass ##PROXY_PASS##;
 
@@ -99,12 +102,34 @@ http {
       proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
       proxy_set_header Host $host;
       proxy_hide_header X-Powered-By;
+      proxy_hide_header Cache-Control;
       
       # Do not pass Authorization header to destination
       proxy_set_header Authorization "";
 
-      add_header Cache-Control "public, max-age: 31536000";
+      add_header Cache-Control "public, max-age=31536000";
       expires 1y;
+    }
+
+    # @TODO
+    location ~* \/manifest\.?([^\.]*?)\.(js|json)$ {
+      proxy_pass ##PROXY_PASS##;
+
+      proxy_set_header X-Forwarded-Host $host;
+      proxy_set_header Upgrade		$http_upgrade;
+      proxy_set_header Connection	"upgrade";
+      proxy_set_header X-Real-IP $remote_addr;
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header Host $host;
+      proxy_hide_header X-Powered-By;
+      proxy_hide_header Cache-Control;
+      
+      # Do not pass Authorization header to destination
+      add_header Cache-Control "public, max-age=60";
+      proxy_set_header Authorization "";
+
+      # Guard By
+      add_header Guard-By whatwewant/openresty-oauth2.0;
     }
 
     location / {
@@ -117,6 +142,7 @@ http {
       proxy_set_header Connection	"upgrade";
       proxy_set_header X-Real-IP $remote_addr;
       proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header X-Forwarded-Proto $scheme;
       proxy_set_header Host $host;
       proxy_hide_header X-Powered-By;
       

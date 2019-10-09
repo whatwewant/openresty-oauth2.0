@@ -1,7 +1,7 @@
-version: '3.3'
+version: '3.7'
 
 services:
-  auth:
+  guard:
     restart: always
     build:
       context: ../../..
@@ -9,6 +9,7 @@ services:
     ports:
       - 8080:80
       - 8090:8090
+    # env_file: .env
     environment:
       MODE: development
       # PORT: 80
@@ -20,8 +21,8 @@ services:
       #
       ROOT_URL: http://127.0.0.1:8080
       PROVIDER: github
-      CLIENT_ID: dc766a78a82e79b72000
-      CLIENT_SECRET: CHANGE_CLIENT_SECRET
+      CLIENT_ID: ${GITHUB_CLIENT_ID}
+      CLIENT_SECRET: ${GITHUB_CLIENT_SECRET}
       # REDIRECT_URI: http://127.0.0.1:8080/_oauth/github
       # SCOPE: ''
       #
