@@ -129,9 +129,21 @@ function _M.set_token(self, user, token)
 
   -- User Info
   for k, v in pairs(COOKIES_USER) do
+    local key = v
+    local value = user[k]
+
+    -- @ISSUE: attempt to concatenate field 'value' (a userdata value)
+    --  1.json null is userdata, custom structure
+    --  2.nickname, avatar maybe is null
+    --  3.json null != nil, null == ngx.null
+    --
+    if value == ngx.null then
+      value = 'null'
+    end
+
     local ok, err = self.cookie:set(object.merge({
-      key = v,
-      value = user[k],
+      key = key,
+      value = value,
     }, config.cookie_options))
 
     if err then
