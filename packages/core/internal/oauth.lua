@@ -50,9 +50,12 @@ function Oauth.token(self, code, state)
   }
 
   local res, err = nil, nil
+  local headers = {
+    ['Content-Type'] = self.options.token_data_in_body_content_type,
+  }
   -- in body
   if self.options.token_data_in_body then
-    res, err = requests.post(url, data)
+    res, err = requests.post(url, data, headers)
   -- in query
   elseif self.options.token_data_in_query then
     res, err = requests.post(url..'?'..ngx.encode_args(data))
@@ -85,6 +88,11 @@ function Oauth.token(self, code, state)
   if res.access_token == nil then
     logger.debug({
       message = '[token] access_token is nil, please see response',
+      data = {
+        url = url,
+        headers = headers,
+        data = data,
+      },
       response = res,
     })
 

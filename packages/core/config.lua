@@ -64,6 +64,7 @@ local config = {
 
   -- @2.2.1 Extendable Data in Body, Query
   token_data_in_body = getenv('TOKEN_DATA_IN_BODY') or false,
+  token_data_in_body_content_type = getenv('TOKEN_DATA_IN_BODY_CONTENT_TYPE') or 'application/json',
   token_data_in_query = getenv('TOKEN_DATA_IN_QUERY') or false,
 
   -- @2.3 GET USER_INFO_URL
