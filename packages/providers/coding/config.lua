@@ -1,13 +1,12 @@
 local base_config = require('oauth/core/config')
 
+-- Provider Name
 local name = 'coding'
-local version = '0.0.1'
+-- Provider Version
+local version = '0.0.2'
 
 local config = {
-  -- Provider Name
   provider_name = name,
-
-  -- Provider Version
   provider_version = version,
 
   -- @2 URL INFO

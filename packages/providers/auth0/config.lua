@@ -5,12 +5,14 @@
 
 local base_config = require('oauth/core/config')
 
-local name = 'auth0'
-local version = '0.0.1'
+-- Provider Name
+local name = 'doreamon'
+-- Provider Version
+local version = '0.0.2'
 
 local config = {
-  -- Provider Name
   provider_name = name,
+  provider_version = version,
 
   -- Provider Version
   provider_version = version,

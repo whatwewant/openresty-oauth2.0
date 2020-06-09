@@ -1,11 +1,14 @@
 local base_config = require('oauth/core/config')
 
-local version = '0.0.1'
+-- Provider Name
+local name = 'gitee'
+-- Provider Version
+local version = '0.0.2'
 
 local config = {
-  -- Provider Version
+  provider_name = name,
   provider_version = version,
-
+  
   -- @2 URL INFO
   -- @2.1 GET AUTHORIZE_URL
   --   args: ?client_id=CLIENT_ID&redirect_uri=REDIRECT_URI&scope=SCOPE&state=xxx

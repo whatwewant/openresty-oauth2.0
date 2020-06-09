@@ -1,6 +1,14 @@
 local base_config = require('oauth/core/config')
 
+-- Provider Name
+local name = 'github'
+-- Provider Version
+local version = '0.0.2'
+
 local config = {
+  provider_name = name,
+  provider_version = version,
+
   -- @2 URL INFO
   -- @2.1 GET AUTHORIZE_URL
   --   args: ?client_id=CLIENT_ID&redirect_uri=REDIRECT_URI&scope=SCOPE&state=xxx
