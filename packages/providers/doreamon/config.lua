@@ -3,7 +3,7 @@ local base_config = require('oauth/core/config')
 -- Provider Name
 local name = 'doreamon'
 -- Provider Version
-local version = '0.0.2'
+local version = '0.0.3'
 
 local config = {
   provider_name = name,
