@@ -23,7 +23,7 @@ services:
       PROVIDER: github
       CLIENT_ID: ${GITHUB_CLIENT_ID}
       CLIENT_SECRET: ${GITHUB_CLIENT_SECRET}
-      # REDIRECT_URI: http://127.0.0.1:8080/_oauth/github
+      # REDIRECT_URI: http://127.0.0.1:8080/login/github/callback
       # SCOPE: ''
       #
       # AUTHORIZE_URL: https://github.com/login/oauth/authorize

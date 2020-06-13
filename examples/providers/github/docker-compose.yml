@@ -18,7 +18,7 @@ services:
       PROXY_PASS: http://web:8080
       CLIENT_ID: dc766a78a82e79b72000
       CLIENT_SECRET: CHANGE_CLIENT_SECRET
-      REDIRECT_URI: http://127.0.0.1:8080/_oauth/github
+      REDIRECT_URI: http://127.0.0.1:8080/login/github/callback
       SCOPE: ''
       #
       AUTHORIZE_URL: https://github.com/login/oauth/authorize

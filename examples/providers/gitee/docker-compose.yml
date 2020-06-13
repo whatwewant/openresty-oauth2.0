@@ -21,7 +21,7 @@ services:
       PROVIDER: gitee
       CLIENT_ID: dead85f1127ebbca9890a39057f5e5e5a28271333cd35483c7d30513044ce4b3
       CLIENT_SECRET: CHANGE_CLIENT_SECRET
-      # REDIRECT_URI: http://127.0.0.1:8080/_oauth/gitee
+      # REDIRECT_URI: http://127.0.0.1:8080/login/gitee/callback
       # SCOPE: ''
       #
       # AUTHORIZE_URL: https://gitee.com/oauth/authorize

@@ -151,7 +151,7 @@ http {
       # proxy_set_header Authorization "";
     }
 
-    location /_oauth/ {
+    location /login/ {
       access_by_lua_file /usr/local/openresty/lualib/oauth/core/authorize.lua;
     }
   }

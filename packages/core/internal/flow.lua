@@ -201,9 +201,9 @@ function _M.validate_permission(self, user)
       return ngx.redirect('/')
     end
 
-    -- @TODO callback url is /_oauth/{provider}, so if it is impossible to get here
+    -- @TODO callback url is /login/{provider}/callback, so if it is impossible to get here
     logger.debug({
-      message = '[validate_permission] callback url is /_oauth/{provider}, so if it is impossible to get here',
+      message = '[validate_permission] callback url is /login/{provider}/callback, so if it is impossible to get here',
       params = {
         username = user.username,
         allow_usernames = config.allow_usernames,
@@ -232,7 +232,7 @@ end
 
 function _M.get_provider(self)
   local uri = ngx.var.uri
-  local matched = ngx.re.match(uri, [[^\/_oauth\/([^\/]+)]], 'jo')
+  local matched = ngx.re.match(uri, [[^\/login\/([^\/]+)\/callback]], 'jo')
 
   if matched == nil or matched[1] == nil then
     -- @TODO

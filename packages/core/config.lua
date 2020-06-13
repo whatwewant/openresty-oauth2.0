@@ -14,7 +14,7 @@ local root_url = getenv('ROOT_URL') or 'http://127.0.0.1:8080'
 local provider = getenv('PROVIDER')
 local allow_usernames_str = getenv('ALLOW_USERNAMES') or 'all'
 
-local redirect_uri = root_url..'/_oauth/'..provider
+local redirect_uri = root_url..'/login/'..provider..'/callback'
 local response_type = getenv('RESPONSE_TYPE') or 'code'
 local scope = getenv('SCOPE') or ''
 
@@ -44,7 +44,7 @@ local config = {
 
   -- @1 AUTHORIZE INFO
   client_id = client_id,
-  -- @example http://127.0.0.1:8080/_oauth/github
+  -- @example http://127.0.0.1:8080/login/github/callback
   redirect_uri = redirect_uri, -- getenv('REDIRECT_URI'),
 
   -- @2 URL INFO

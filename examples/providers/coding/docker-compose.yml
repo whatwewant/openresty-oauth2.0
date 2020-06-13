@@ -21,7 +21,7 @@ services:
       PROVIDER: coding
       CLIENT_ID: e883e9d2fb8b058e55cdb65cf17d70fc
       CLIENT_SECRET: CHANGE_CLIENT_SECRET
-      # REDIRECT_URI: http://127.0.0.1:8080/_oauth/coding
+      # REDIRECT_URI: http://127.0.0.1:8080/login/coding/callback
       # SCOPE: 'user'
       # #
       # AUTHORIZE_URL: https://whatwewant.coding.net/oauth_authorize.html
