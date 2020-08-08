@@ -4,7 +4,7 @@ local object = require('oauth/utils/object')
 local split = object.split
 local merge = object.merge
 
-local version = '1.0.11'
+local version = '1.0.12'
 
 local PRODUCTION = 'production'
 local ALLOW_ALL = 'all'
