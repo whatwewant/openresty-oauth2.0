@@ -1,4 +1,4 @@
-FROM openresty/openresty:1.17.8.2-2-alpine
+FROM openresty/openresty:1.19.3.1-1-alpine
 
 # WORKDIR /usr/local/openresty/nginx/conf
 WORKDIR /usr/local/openresty/lualib/oauth
