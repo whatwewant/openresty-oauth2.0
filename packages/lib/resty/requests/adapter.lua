@@ -334,7 +334,7 @@ local function handshake(self, request)
 
     local verify = self.verify
     local reused_session = self.reused_session
-    local server_name = self.server_name
+    local server_name = self.server_name or request.host
     local sock = self.sock
     sock:settimeout(self.send_timeout)
     local times, err = sock:getreusedtimes()
